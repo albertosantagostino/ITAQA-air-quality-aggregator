@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pyenv
+.python-version
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+eggs/
+.eggs/
+*.egg
+lib/
+lib64/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+MANIFEST
+
+# IDE
+.vscode/
