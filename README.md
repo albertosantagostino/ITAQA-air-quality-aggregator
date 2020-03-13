@@ -8,7 +8,7 @@ The idea of collecting and measuring air pollution in this period of time origin
 
 > As a consequence of the SARS-CoV-2 outbreak in Italy ([Wikipedia link](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy)), will there be a measurable **effect on the air pollution** in the affected region(s) due to the "more people working from home therefore **less traffic**" effect? And if yes, will it be "synced" with the different level of "quarantine" decided/imposed by the Italian government in these weeks/months? If yes, in which way?
 
-## Rationale
+## Objectives
 
 * Have a single entrypoint from which orchestrate the download of data from different Italy regions and sources (mostly **ARPA** websites)
   * ARPA websites are unfortunately a lot different among the various regions (see websites of [ARPA Piemonte](http://www.arpa.piemonte.it/) vs [ARPA Lombardia](https://www.arpalombardia.it/Pages/ARPA_Home_Page.aspx) vs [ARPA Emilia-Romagna](https://www.arpae.it/), for example)

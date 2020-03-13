@@ -7,7 +7,7 @@ WIP: Evaluate future switch to a simple GUI
 """
 
 from ITAQA.core import AirQualityStation
-from ITAQA.datacrawler import piemonte
+from ITAQA.crawler import piemonte
 
 import csv
 import ipdb
