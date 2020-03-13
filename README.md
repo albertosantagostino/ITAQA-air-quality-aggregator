@@ -17,6 +17,11 @@ The idea of collecting and measuring air pollution in this period of time origin
 * Build a module to graphically visualize data and history of pollutants in different areas of the country
 * Search correlation between big "behavior-changing" events and air pollution
 
+## Architecture
+
+![Architecture 0.1](docs/architecture/architecture.png)
+
+
 ## FAQ
 
 _Fromnobody Answered Questions_

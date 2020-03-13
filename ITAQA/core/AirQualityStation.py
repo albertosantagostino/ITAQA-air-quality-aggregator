@@ -4,7 +4,7 @@
 Class AirQualityStation
 """
 
-from air_quality.geography import Italy
+from ITAQA.geography import Italy
 
 
 class AirQualityStation():
