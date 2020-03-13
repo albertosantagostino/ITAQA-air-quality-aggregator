@@ -18,7 +18,7 @@
       "opacity": 50,
       "seed": 2038702899,
       "points": [],
-      "version": 367
+      "version": 368
     },
     {
       "id": "u71PGWBUyA-tMUc0Nx3C6",
@@ -35,7 +35,7 @@
       "opacity": 100,
       "seed": 1175863963,
       "points": [],
-      "version": 549
+      "version": 550
     },
     {
       "id": "d8khVmXARMYovW-zjreou",
@@ -52,7 +52,7 @@
       "opacity": 40,
       "seed": 1062414128,
       "points": [],
-      "version": 417
+      "version": 418
     },
     {
       "id": "pMopsrSCeQYfE5soYwPSF",
@@ -69,7 +69,7 @@
       "opacity": 100,
       "seed": 1455137927,
       "points": [],
-      "version": 166,
+      "version": 167,
       "text": "ARPA Piemonte",
       "font": "20px Cascadia",
       "baseline": 20
@@ -89,7 +89,7 @@
       "opacity": 40,
       "seed": 2107152305,
       "points": [],
-      "version": 441
+      "version": 442
     },
     {
       "id": "mQcTPukpFb0wd6sLS-T8L",
@@ -106,7 +106,7 @@
       "opacity": 100,
       "seed": 1366231214,
       "points": [],
-      "version": 185,
+      "version": 186,
       "text": "ARPA Lombardia",
       "font": "20px Cascadia",
       "baseline": 20
@@ -126,7 +126,7 @@
       "opacity": 40,
       "seed": 427565780,
       "points": [],
-      "version": 574
+      "version": 575
     },
     {
       "id": "gY4MLduzr14Iki0QbZAec",
@@ -152,7 +152,7 @@
           61.804347826086996
         ]
       ],
-      "version": 79
+      "version": 80
     },
     {
       "id": "UQHTwaghuYudJSvgMq-IP",
@@ -169,7 +169,7 @@
       "opacity": 50,
       "seed": 1857428085,
       "points": [],
-      "version": 556
+      "version": 557
     },
     {
       "id": "0iy98aoEPk-HiZfBcZF1e",
@@ -186,7 +186,7 @@
       "opacity": 100,
       "seed": 57631381,
       "points": [],
-      "version": 140,
+      "version": 141,
       "text": "CRAWLERS",
       "font": "28px Cascadia",
       "baseline": 28
@@ -215,7 +215,7 @@
           62.312822402358165
         ]
       ],
-      "version": 129
+      "version": 130
     },
     {
       "id": "mPmGyTFNA6LDwa6cO_PsU",
@@ -241,7 +241,7 @@
           63.46536477523955
         ]
       ],
-      "version": 167
+      "version": 168
     },
     {
       "id": "YNobOmQg7ribiurzrRaQZ",
@@ -267,7 +267,7 @@
           0
         ]
       ],
-      "version": 162
+      "version": 163
     },
     {
       "id": "YqwlsK2za3_T23RxhhplY",
@@ -284,7 +284,7 @@
       "opacity": 40,
       "seed": 569893852,
       "points": [],
-      "version": 125
+      "version": 126
     },
     {
       "id": "pek6PCN8Lk5QhBqlp9luD",
@@ -301,7 +301,7 @@
       "opacity": 50,
       "seed": 1540115857,
       "points": [],
-      "version": 744
+      "version": 745
     },
     {
       "id": "UiQvQbuWBI1jMAX-5vi0I",
@@ -327,7 +327,7 @@
           49.56521739130437
         ]
       ],
-      "version": 253
+      "version": 254
     },
     {
       "id": "OuWyg9m1UKf7WO6zyCejm",
@@ -344,7 +344,7 @@
       "opacity": 100,
       "seed": 692455829,
       "points": [],
-      "version": 317,
+      "version": 318,
       "text": "ARPA ...",
       "font": "20px Cascadia",
       "baseline": 20
@@ -364,7 +364,7 @@
       "opacity": 100,
       "seed": 907598090,
       "points": [],
-      "version": 1488
+      "version": 1489
     },
     {
       "id": "uOU_hkwebPQYuAIqsZlee",
@@ -381,7 +381,7 @@
       "opacity": 100,
       "seed": 637551162,
       "points": [],
-      "version": 857
+      "version": 858
     },
     {
       "id": "AFNm4fYESd0Z0oSWEn5_Q",
@@ -398,7 +398,7 @@
       "opacity": 100,
       "seed": 1334539965,
       "points": [],
-      "version": 887
+      "version": 888
     },
     {
       "id": "9ZjfYuxuEHlqmBigxHDSM",
@@ -415,7 +415,7 @@
       "opacity": 60,
       "seed": 630541581,
       "points": [],
-      "version": 878,
+      "version": 879,
       "text": "Geolocation (coordinates)",
       "font": "16px Cascadia",
       "baseline": 16
@@ -435,7 +435,7 @@
       "opacity": 100,
       "seed": 968678362,
       "points": [],
-      "version": 954
+      "version": 955
     },
     {
       "id": "80oHccm_Ll5ok4SRertFo",
@@ -452,7 +452,7 @@
       "opacity": 60,
       "seed": 1602896322,
       "points": [],
-      "version": 804,
+      "version": 805,
       "text": "Name, Region, Province",
       "font": "16px Cascadia",
       "baseline": 16
@@ -472,7 +472,7 @@
       "opacity": 100,
       "seed": 2130043563,
       "points": [],
-      "version": 750,
+      "version": 751,
       "text": "AirQualityStation",
       "font": "20px Cascadia",
       "baseline": 20
@@ -492,7 +492,7 @@
       "opacity": 60,
       "seed": 131921380,
       "points": [],
-      "version": 914,
+      "version": 915,
       "text": "Data",
       "font": "16px Cascadia",
       "baseline": 16
@@ -521,7 +521,7 @@
           -145.62385321100908
         ]
       ],
-      "version": 401
+      "version": 402
     },
     {
       "id": "ukZ6Lja4bwDYvutIZ5sp4",
@@ -547,7 +547,7 @@
           168.80733944954113
         ]
       ],
-      "version": 277
+      "version": 278
     },
     {
       "id": "0J_0Yv2FlnP_xcU1xq4SZ",
@@ -564,7 +564,7 @@
       "opacity": 100,
       "seed": 858610348,
       "points": [],
-      "version": 109,
+      "version": 110,
       "text": "CSV Collection",
       "font": "20px Cascadia",
       "baseline": 20
@@ -593,7 +593,7 @@
           184.14634146341473
         ]
       ],
-      "version": 9
+      "version": 10
     },
     {
       "id": "8wpGVvrSuUBxArkROJT2K",
@@ -610,30 +610,10 @@
       "opacity": 100,
       "seed": 1812588168,
       "points": [],
-      "version": 464,
+      "version": 465,
       "text": "PARSERS",
       "font": "28px Cascadia",
       "baseline": 28
-    },
-    {
-      "id": "JmZIGS8eBcUTE9nlRvgn5",
-      "type": "text",
-      "x": 418.5487804878045,
-      "y": 278.4756097560976,
-      "width": 113,
-      "height": 20,
-      "strokeColor": "#a61e4d",
-      "backgroundColor": "#6ef2f4",
-      "fillStyle": "hachure",
-      "strokeWidth": 2,
-      "roughness": 0,
-      "opacity": 100,
-      "seed": 134024464,
-      "points": [],
-      "version": 76,
-      "text": "/datacrawler",
-      "font": "16px Cascadia",
-      "baseline": 16
     },
     {
       "id": "URpkb9JF197SaAcKAqzoX",
@@ -650,7 +630,7 @@
       "opacity": 100,
       "seed": 1634745797,
       "points": [],
-      "version": 128,
+      "version": 129,
       "text": "For each region\n\nFinal result:\nGlobal collection of AirQualityStation objects",
       "font": "16px Cascadia",
       "baseline": 76
@@ -670,7 +650,7 @@
       "opacity": 100,
       "seed": 214580012,
       "points": [],
-      "version": 467,
+      "version": 468,
       "text": "{\n   '20200101': {\n                 'PM10': 30.4,\n                 'PM2.5': 29.1,\n                 'CO': 258\n   },\n   '20200102': {\n                 'PM10': 27.5,\n                 'PM2.5': 26.3,\n                 'CO': 241\n   },\n   '20200103': {\n                 'PM10': 32.5,\n                 'PM2.5': 27.2,\n                 'CO': 289\n   }\n}",
       "font": "16px Cascadia",
       "baseline": 336
@@ -690,7 +670,7 @@
       "opacity": 60,
       "seed": 1226597204,
       "points": [],
-      "version": 446
+      "version": 447
     },
     {
       "id": "ojxSvJn1x8ZyDI9lNTj7O",
@@ -707,7 +687,7 @@
       "opacity": 60,
       "seed": 708254241,
       "points": [],
-      "version": 464
+      "version": 465
     },
     {
       "id": "oz1WBpaFbv9NejiuwpGdD",
@@ -724,7 +704,7 @@
       "opacity": 60,
       "seed": 1975789872,
       "points": [],
-      "version": 477
+      "version": 478
     },
     {
       "id": "6xyONkqKpY5L2kMWEvtk0",
@@ -741,7 +721,7 @@
       "opacity": 60,
       "seed": 1267270148,
       "points": [],
-      "version": 463
+      "version": 464
     },
     {
       "id": "upk9GV6CxxuW1LJUV8zif",
@@ -758,7 +738,7 @@
       "opacity": 60,
       "seed": 1757148694,
       "points": [],
-      "version": 494
+      "version": 495
     },
     {
       "id": "mx_nEVszQFvPbv-fwwdOu",
@@ -775,7 +755,7 @@
       "opacity": 60,
       "seed": 1214443096,
       "points": [],
-      "version": 512
+      "version": 513
     },
     {
       "id": "hvxQ3wgF56FeTHz_-QJIj",
@@ -792,7 +772,7 @@
       "opacity": 60,
       "seed": 1667840718,
       "points": [],
-      "version": 527
+      "version": 528
     },
     {
       "id": "rmz0eBy2e2pIe12gcvfs1",
@@ -809,7 +789,7 @@
       "opacity": 60,
       "seed": 1176498143,
       "points": [],
-      "version": 513
+      "version": 514
     },
     {
       "id": "0Je-WRJdrBspsz_dliUgA",
@@ -826,7 +806,7 @@
       "opacity": 60,
       "seed": 2072474267,
       "points": [],
-      "version": 480
+      "version": 481
     },
     {
       "id": "95S4undtmi33lgX0mxQn1",
@@ -843,7 +823,7 @@
       "opacity": 60,
       "seed": 1253055229,
       "points": [],
-      "version": 498
+      "version": 499
     },
     {
       "id": "munz1h93igxBu-5OA9T8t",
@@ -860,7 +840,7 @@
       "opacity": 60,
       "seed": 1537007788,
       "points": [],
-      "version": 511
+      "version": 512
     },
     {
       "id": "-Y1Lmwt81_RxoQIhjlnUC",
@@ -877,7 +857,7 @@
       "opacity": 60,
       "seed": 289807570,
       "points": [],
-      "version": 500
+      "version": 501
     },
     {
       "id": "-5qQdVvTHg-niPuDmPmbk",
@@ -894,7 +874,7 @@
       "opacity": 60,
       "seed": 2129039347,
       "points": [],
-      "version": 528
+      "version": 529
     },
     {
       "id": "m7gPDKVp1H3UBhfBS84Jd",
@@ -911,7 +891,7 @@
       "opacity": 60,
       "seed": 394696558,
       "points": [],
-      "version": 546
+      "version": 547
     },
     {
       "id": "nPokqaRmwfcoBpJj-T5fw",
@@ -928,7 +908,7 @@
       "opacity": 60,
       "seed": 50727237,
       "points": [],
-      "version": 565
+      "version": 566
     },
     {
       "id": "sUSKyepfDhFQs_BQSTwhx",
@@ -945,7 +925,7 @@
       "opacity": 60,
       "seed": 870502672,
       "points": [],
-      "version": 547
+      "version": 548
     },
     {
       "id": "0ySkTgQYuX-GCWEfi7kzR",
@@ -971,7 +951,7 @@
           -48.54368932038835
         ]
       ],
-      "version": 19
+      "version": 20
     },
     {
       "id": "-UplYKKAZXQTBn_hC7ZEL",
@@ -997,7 +977,7 @@
           52.42718446601941
         ]
       ],
-      "version": 17
+      "version": 18
     },
     {
       "id": "pJ1mnooncJbgaTj2r0o-_",
@@ -1014,7 +994,7 @@
       "opacity": 100,
       "seed": 1372408372,
       "points": [],
-      "version": 82,
+      "version": 83,
       "text": "DB",
       "font": "20px Cascadia",
       "baseline": 20
@@ -1034,7 +1014,7 @@
       "opacity": 60,
       "seed": 1295324697,
       "points": [],
-      "version": 584
+      "version": 585
     },
     {
       "id": "bcEFsZuj90UPXX7ASyzXc",
@@ -1060,7 +1040,7 @@
           60.55045871559628
         ]
       ],
-      "version": 519
+      "version": 520
     },
     {
       "id": "def2yoo7axpcPxry-feEO",
@@ -1086,7 +1066,7 @@
           60.55045871559628
         ]
       ],
-      "version": 564
+      "version": 565
     },
     {
       "id": "1mUeYdEKh2uRQ9wpLbzS9",
@@ -1103,7 +1083,7 @@
       "opacity": 30,
       "seed": 1868795831,
       "points": [],
-      "version": 607
+      "version": 608
     },
     {
       "id": "s12n9zVYwyLHCeYDs1cgW",
@@ -1129,7 +1109,7 @@
           98.165137614679
         ]
       ],
-      "version": 4
+      "version": 5
     },
     {
       "id": "wst0cUac5zQGPscORun-Y",
@@ -1155,7 +1135,47 @@
           98.16513761467888
         ]
       ],
-      "version": 4
+      "version": 5
+    },
+    {
+      "id": "JmZIGS8eBcUTE9nlRvgn5",
+      "type": "text",
+      "x": 418.5487804878045,
+      "y": 277.4756097560976,
+      "width": 75,
+      "height": 20,
+      "strokeColor": "#a61e4d",
+      "backgroundColor": "#6ef2f4",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 134024464,
+      "points": [],
+      "version": 164,
+      "text": "/crawler",
+      "font": "16px Cascadia",
+      "baseline": 16
+    },
+    {
+      "id": "gv1vG3snXRF_TwNW70ZIn",
+      "type": "text",
+      "x": 420,
+      "y": 388,
+      "width": 66,
+      "height": 20,
+      "strokeColor": "#a61e4d",
+      "backgroundColor": "#6ef2f4",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 939295292,
+      "points": [],
+      "version": 264,
+      "text": "/parser",
+      "font": "16px Cascadia",
+      "baseline": 16
     }
   ],
   "appState": {
