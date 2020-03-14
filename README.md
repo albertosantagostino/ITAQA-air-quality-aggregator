@@ -34,13 +34,13 @@ _Fromnobody Answered Questions_
 
 > Nice! But I didn't check if this thing was already existing, because if I do this all the time, I wouldn't get any projects done :) I'm also developing this as a personal project, to learn stuff, not only to "plot a graph and that's it"
 
-g*What are these regional "ARPA"?**
+**What are these regional "ARPA"?**
 
 > These are *"Agenzie Regionali per la Protezione Ambientale"* (*Regional Environmental Protection Agency*), Italian governmental agencies that collect and analyze data on air, water, acoustic and soil pollution on the national territory
 
 **Can I contribute?**
 
-> Yes, of course, as soon as the project is structured enough, refer to [CONTRIBUTING](CONTRIBUTING.md)
+> Yes, of course, as soon as the project is structured enough, refer to [CONTRIBUTING](CONTRIBUTING.md)  
 > (Right now I have zero expectations on the final state of the project, I don't even know why I'm writing a FAQ section, but nevertheless this repository is and will stay public)
 
 ## ARPA Websites
