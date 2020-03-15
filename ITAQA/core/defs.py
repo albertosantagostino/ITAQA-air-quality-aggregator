@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Definition of pollutants
+Definition of pollutants and eventually other required enums (station type, ...)
 """
 
 from enum import Enum, auto
