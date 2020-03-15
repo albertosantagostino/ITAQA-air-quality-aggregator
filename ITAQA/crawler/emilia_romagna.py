@@ -24,12 +24,12 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
     # TODO: support arbitrary date ranges
     # TODO: catch HTTPError for unavailable pages and drop them
     # TODO: discard or warn if page contains "Dati in attesa di validazione"
-    end_date = datetime.today()-timedelta(2)
+    end_date = datetime.today() - timedelta(2)
 
     date_list = pd.date_range(end=end_date, periods=days).tolist()
     date_string_list = [x.strftime('%Y%m%d') for x in date_list]
 
-    pd_singleday_list = []  # List of prepped tables for merging + output
+    pd_singleday_list = []    # List of prepped tables for merging + output
 
     base_url = 'https://apps.arpae.it/qualita-aria/bollettino-qa/'
     for date_string in date_string_list:
@@ -37,7 +37,7 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
         html_doc = urllib.request.urlopen(url).read()
 
         pd_table_list = pd.read_html(html_doc)
-        pd_table_list.pop(-1)  # Last table is just pollutants threshold values
+        pd_table_list.pop(-1)    # Last table is just pollutants threshold values
 
         for pd_table in pd_table_list:
             # TODO: Improve - e.g. do most stuff as inplace
@@ -45,16 +45,10 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
             # Drop last columns (threshold overshooting counts)
             pd_table.drop(pd_table.columns[[10, 11, 12, 13]], axis=1, inplace=True)
             # Rename headers
-            pd_table.columns = ['Provincia',
-                                'Stazione',
-                                Pollutant.PM10,
-                                Pollutant.PM2_5,
-                                Pollutant.NO2,
-                                Pollutant.O3,
-                                'O3_8h',
-                                Pollutant.BENZENE,
-                                Pollutant.CO,
-                                Pollutant.SO2]
+            pd_table.columns = [
+                'Provincia', 'Stazione', Pollutant.PM10, Pollutant.PM2_5, Pollutant.NO2, Pollutant.O3, 'O3_8h',
+                Pollutant.BENZENE, Pollutant.CO, Pollutant.SO2
+            ]
             # Split Station field into Station, Type
             # TODO: Differentiate between Location and Name in Station field...
             station_data = pd_table['Stazione'].str.split(" / ", n=1, expand=True)
@@ -68,7 +62,7 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
 
         pd_singleday_list.append(pd_singleday)
 
-    pd_output = reduce(lambda  x, y: pd.merge(x, y, on='Stazione'), pd_singleday_list)
+    pd_output = reduce(lambda x, y: pd.merge(x, y, on='Stazione'), pd_singleday_list)
     # TODO: support values such as "< 3" or "n.d." and numeric vs text
 
     return pd_output.to_csv()
