@@ -47,23 +47,23 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
             # Rename headers
             # TODO: Decide "how to yapf" these kinds of lists
             pd_table.columns = [
-                'Provincia', 'Stazione', Pollutant.PM10, Pollutant.PM2_5, Pollutant.NO2, Pollutant.O3, 'O3_8h',
+                'Province', 'Station', Pollutant.PM10, Pollutant.PM2_5, Pollutant.NO2, Pollutant.O3, 'O3_8h',
                 Pollutant.BENZENE, Pollutant.CO, Pollutant.SO2
             ]
             # Split Station field into Station, Type
             # TODO: Differentiate between Location and Name in Station field...
-            station_data = pd_table['Stazione'].str.split(" / ", n=1, expand=True)
-            pd_table['Stazione'] = station_data[0]
-            pd_table['Tipo'] = station_data[1]
+            station_data = pd_table['Station'].str.split(" / ", n=1, expand=True)
+            pd_table['Station'] = station_data[0]
+            pd_table['Type'] = station_data[1]
 
         # New data frame merging all stations for the single day and pollutant
-        pd_singleday = pd.concat(pd_table_list, axis=0)[['Stazione', pollutant]]
+        pd_singleday = pd.concat(pd_table_list, axis=0)[['Station', pollutant]]
         pd_singleday.reset_index(drop=True)
-        pd_singleday.columns = ['Stazione', date_string]
+        pd_singleday.columns = ['Station', date_string]
 
         pd_singleday_list.append(pd_singleday)
 
-    pd_output = reduce(lambda x, y: pd.merge(x, y, on='Stazione'), pd_singleday_list)
+    pd_output = reduce(lambda x, y: pd.merge(x, y, on='Station'), pd_singleday_list)
     # TODO: Support values such as "< 3" or "n.d." and numeric vs text
 
     return pd_output.to_csv()
