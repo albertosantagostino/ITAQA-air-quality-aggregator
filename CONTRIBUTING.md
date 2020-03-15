@@ -17,7 +17,7 @@
 
 The formatter used in the project is [**YAPF** (*Yet Another Python Formatter*)](https://github.com/google/yapf). It can be installed easily via pip: `pip install yafp`
 
-To format all the files in the project, run `yapf *.py -r -i` from the root of the project
+To format all the files in the project, run `yapf -ir .` from the root of the project
 
 #### Branch names
 
