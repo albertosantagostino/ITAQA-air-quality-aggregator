@@ -21,9 +21,9 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
     Website: https://apps.arpae.it/qualita-aria/bollettino-qa
     """
 
-    # TODO: support arbitrary date ranges
-    # TODO: catch HTTPError for unavailable pages and drop them
-    # TODO: discard or warn if page contains "Dati in attesa di validazione"
+    # TODO: Support arbitrary date ranges
+    # TODO: Catch HTTPError for unavailable pages and drop them
+    # TODO: Discard or warn if page contains "Dati in attesa di validazione"
     end_date = datetime.today() - timedelta(2)
 
     date_list = pd.date_range(end=end_date, periods=days).tolist()
@@ -45,6 +45,7 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
             # Drop last columns (threshold overshooting counts)
             pd_table.drop(pd_table.columns[[10, 11, 12, 13]], axis=1, inplace=True)
             # Rename headers
+            # TODO: Decide "how to yapf" these kinds of lists
             pd_table.columns = [
                 'Provincia', 'Stazione', Pollutant.PM10, Pollutant.PM2_5, Pollutant.NO2, Pollutant.O3, 'O3_8h',
                 Pollutant.BENZENE, Pollutant.CO, Pollutant.SO2
@@ -63,7 +64,7 @@ def get_csv(pollutant=Pollutant.UNSET, days=10):
         pd_singleday_list.append(pd_singleday)
 
     pd_output = reduce(lambda x, y: pd.merge(x, y, on='Stazione'), pd_singleday_list)
-    # TODO: support values such as "< 3" or "n.d." and numeric vs text
+    # TODO: Support values such as "< 3" or "n.d." and numeric vs text
 
     return pd_output.to_csv()
 
