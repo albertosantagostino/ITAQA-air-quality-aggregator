@@ -22,7 +22,7 @@ class AirQualityStation():
     Raises:
         ValueError: If station_name is empty
     """
-    def __init__(self, station_name, region = None, province = None):
+    def __init__(self, station_name, region=None, province=None):
         # Validate service name
         if not station_name:
             raise ValueError("Station name cannot be empty")

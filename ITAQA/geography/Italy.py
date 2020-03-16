@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Definition of Italy regions/provinces
 """
@@ -33,6 +32,7 @@ class Region(Enum):
     VENETO              = auto()
     UNSET               = auto()
     # yapf: enable
+
 
 class Province(Enum):
     """Enum holding Italy's provinces"""

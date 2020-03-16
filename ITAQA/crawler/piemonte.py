@@ -26,18 +26,18 @@ def get_PM10_csv():
     js_table = re.search("(?<=TabellaQaPM10Dati_var = ).*?(?=;)", table_script.text).group()
 
     # TODO: Refactor/beautify
-    js_table = js_table.replace('<rows>','<table>')
-    js_table = js_table.replace('</rows>','</table>')
-    js_table = js_table.replace('<row>','<tr>')
-    js_table = js_table.replace('</row>','</tr>')
-    js_table = js_table.replace('<cell>','<td>')
-    js_table = js_table.replace('</cell>','</td>')
+    js_table = js_table.replace('<rows>', '<table>')
+    js_table = js_table.replace('</rows>', '</table>')
+    js_table = js_table.replace('<row>', '<tr>')
+    js_table = js_table.replace('</row>', '</tr>')
+    js_table = js_table.replace('<cell>', '<td>')
+    js_table = js_table.replace('</cell>', '</td>')
     pd_table = pd.read_html(js_table)[0]
-    pd_table = pd_table.drop(pd_table.columns[[0,2,3,5,7,9,11,13,15,17,19,21]], axis=1)
+    pd_table = pd_table.drop(pd_table.columns[[0, 2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21]], axis=1)
     pd_table = pd_table.drop(pd_table.index[[-1]])
-    pd_table.at[0,1] = 'Stazione'
+    pd_table.at[0, 1] = 'Stazione'
     header = pd_table.iloc[0]
     pd_table = pd_table[1:]
-    pd_table = pd_table.rename(columns = header)
+    pd_table = pd_table.rename(columns=header)
 
     return pd_table.to_csv()
