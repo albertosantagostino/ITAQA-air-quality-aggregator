@@ -45,6 +45,7 @@ class AirQualityStation():
         self.geolocation = None
 
         # Metadata and data
+        # TODO: Make the time in UTC Time and add 'Z' in the end
         self.metadata = {'created_on': datetime.now().strftime("%Y%m%d-%H%M%S")}
         self.data = {}
 
@@ -73,8 +74,11 @@ class AirQualityStation():
         # TODO: Validate coordinates, catch invalid values
         self.geolocation = (lat, lon, alt)
 
-    def set_data(self, data_pd):
+    def update_data(self, data_pd):
         """Set pollution DataFrame"""
+        # TODO: Avoid writing again data already present (if provided with new days update the dataframe)
+        # TODO: On rows the day and on columns the pollutants
         # TODO: Validate data before assignment, check if in the expected format
         # TODO: Update metadata information (how many data, max date, min date, measured pollutants)
         self.data = data_pd
+        
