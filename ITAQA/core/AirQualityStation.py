@@ -5,6 +5,7 @@ Class AirQualityStation
 """
 
 from datetime import datetime
+import pandas as pd
 
 from ITAQA.geography import Italy, converter
 
@@ -21,7 +22,7 @@ class AirQualityStation():
         region (Italy.Region): Region in which the station is located
         province (Italy.Province): Province in which the station is located
         comune (str): Comune in which the station is located
-        geolocation (tuple): Geographic coordinates in the format (lat, lon, alt)
+        geolocation (tuple): Geographic coordinates in the format (lat, lng, alt)
         metadata(dict): Information on the object
         data(pandas.DataFrame): Air pollution data of the station
 
@@ -45,9 +46,9 @@ class AirQualityStation():
         self.geolocation = None
 
         # Metadata and data
-        # TODO: Make this UTC
+        # TODO: Define time as UTC?
         self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S")}
-        self.data = {}
+        self.data = pd.DataFrame()
 
     def __repr__(self):
         return f"AirQualityStation('{self.station_name}','{self.region}','{self.province},'{self.comune}')"
@@ -69,10 +70,10 @@ class AirQualityStation():
         if comune:
             self.comune = comune
 
-    def set_geolocation(self, lat, lon, alt=None):
+    def set_geolocation(self, lat, lng, alt=None):
         """Set geographic coordinates of the station"""
         # TODO: Validate coordinates, catch invalid values
-        self.geolocation = (lat, lon, alt)
+        self.geolocation = (lat, lng, alt)
 
     def update_data(self, data_pd):
         """Set pollution DataFrame"""
