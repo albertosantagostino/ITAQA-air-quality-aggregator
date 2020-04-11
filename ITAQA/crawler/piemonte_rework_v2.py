@@ -7,6 +7,7 @@ Piemonte data downloader and parser
 import pandas as pd
 import csv
 import operator
+import progressbar
 import ipdb
 
 from ITAQA.core.defs import Pollutant
@@ -23,20 +24,33 @@ def main():
                            parse_dates={'Datetime': ['Data', 'Ora']},
                            dayfirst=True,
                            infer_datetime_format=True)
-        dts = data.Datetime.unique()
+
         new_data = pd.DataFrame()
+        stations = data.station.unique()
+        idx = 1
 
-        for dt in dts:
-            entries = data.loc[data.Datetime == dt]
-            current_sensors = entries.Sensore.unique()
-            new = {get_pollutant_enum_name(sensor): get_value(entries, sensor) for sensor in current_sensors}
-            new_record = pd.DataFrame.from_records(new, index=[pd.to_datetime(str(dt)).strftime("%Y%m%dT%H%M%S")])
-            new_data = new_data.append(new_record)
+        print(f"Reading {len(stations)} AQS from CSV...")
+        for station in stations:
+            print(f"Parsing {station}... ({idx}/{len(stations)})")
+            station_data = data.loc[data['station'] == station]
+            dts = station_data.Datetime.unique()
+            parsed_dts = 0
+            with progressbar.ProgressBar(max_value=len(dts)) as dts_bar:
+                for dt in dts:
+                    entries = station_data.loc[data.Datetime == dt]
+                    current_sensors = entries.Sensore.unique()
+                    new = {get_pollutant_enum_name(sensor): get_value(entries, sensor) for sensor in current_sensors}
+                    new_record = pd.DataFrame.from_records(new,
+                                                           index=[pd.to_datetime(str(dt)).strftime("%Y%m%dT%H%M%S")])
+                    new_data = new_data.append(new_record)
+                    parsed_dts += 1
+                    dts_bar.update(parsed_dts)
+            AQS = AirQualityStation(station)
+            AQS.set_address(region=Italy.Region.PIEMONTE)
+            AQS.update_data(new_data)
+            AQS_list.append(AQS)
+            idx += 1
 
-        AQS = AirQualityStation(data.station.unique().item())
-        AQS.set_address(region=Italy.Region.PIEMONTE)
-        AQS.update_data(new_data)
-        AQS_list.append(AQS)
         ipdb.set_trace()
 
 
@@ -45,6 +59,7 @@ def get_value(entries, sensor):
         return float(entries.loc[entries['Sensore'] == sensor]['Valore validato'])
     except TypeError:
         ipdb.set_trace()
+        raise TypeError(f"Unexpected type while getting sensor value: {sensor}")
 
 
 def get_pollutant_enum_name(sensor_type):
