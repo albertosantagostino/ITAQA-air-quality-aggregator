@@ -7,6 +7,7 @@ Class AirQualityStation
 from datetime import datetime
 
 from ITAQA.geography import Italy, converter
+from ITAQA.core import defs
 
 
 class AirQualityStation():
@@ -45,9 +46,8 @@ class AirQualityStation():
         self.geolocation = None
 
         # Metadata and data
-        # TODO: Make this UTC
-        self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S")}
-        self.data = {}
+        # TODO: Define time as UTC?
+        self.init_metadata()
 
     def __repr__(self):
         return f"AirQualityStation('{self.station_name}','{self.region}','{self.province},'{self.comune}')"
@@ -81,3 +81,22 @@ class AirQualityStation():
         # TODO: Validate data before assignment, check if in the expected format
         # TODO: Update metadata information (data stored, max date, min date, measured pollutants)
         self.data = data_pd
+        self.update_metadata()
+
+    def update_metadata(self):
+        # Update pollutants available in data
+        for k in self.metadata['pollutants'].keys():
+            if k in self.data.columns.to_list():
+                self.metadata['pollutants'][k] = True
+        # Update amount of data
+        self.metadata['pollutants_count'].update(self.data.count().to_dict())
+
+    def init_metadata(self):
+        self.metadata = {}
+        # TODO: Unify pollutants and pollutants_count
+        self.metadata['pollutants'] = {
+            pollutant.name: False
+            for pollutant in defs.Pollutant if pollutant.name != 'UNSET'
+        }
+        self.metadata['pollutants_count'] = {}
+        self.metadata['creation'] = datetime.now().strftime("%Y%m%dT%H%M%S")
