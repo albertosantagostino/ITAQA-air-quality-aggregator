@@ -8,8 +8,8 @@ WIP: Evaluate future switch to a simple GUI
 
 from datetime import datetime
 
-from ITAQA.core import AirQualityStation
-from ITAQA.crawler import lombardia
+from itaqa.core import AirQualityStation
+from itaqa.crawler import lombardia
 
 import csv
 import ipdb

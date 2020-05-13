@@ -4,7 +4,7 @@
 Utilities for geography-related conversions
 """
 
-from ITAQA.geography.Italy import Province
+from itaqa.geography.Italy import Province
 
 
 def lookup_province_name(province_enum):

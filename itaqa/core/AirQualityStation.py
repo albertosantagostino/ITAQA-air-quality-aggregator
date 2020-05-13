@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 import pandas as pd
 
-from ITAQA.geography import Italy, converter
+from itaqa.geography import Italy, converter
 
 
 class AirQualityStation():

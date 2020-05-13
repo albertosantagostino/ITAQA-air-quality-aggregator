@@ -9,7 +9,7 @@ from functools import reduce
 import urllib
 import pandas as pd
 
-from ITAQA.core.defs import Pollutant
+from itaqa.core.defs import Pollutant
 
 
 def get_csv(pollutant=Pollutant.UNSET, days=10):

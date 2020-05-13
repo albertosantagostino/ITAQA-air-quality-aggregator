@@ -13,10 +13,10 @@ import progressbar
 
 from datetime import datetime
 
-from ITAQA.core.defs import Pollutant
-from ITAQA.core.AirQualityStation import AirQualityStation
-from ITAQA.geography import Italy
-from ITAQA.utils import csv_utils
+from itaqa.core.defs import Pollutant
+from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.geography import Italy
+from itaqa.utils import csv_utils
 
 
 def get_AQS_list(dt_range, redownload=False):
