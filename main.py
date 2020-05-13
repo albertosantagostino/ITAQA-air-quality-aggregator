@@ -6,8 +6,10 @@ Entrypoint to download/handle data and generate plots
 WIP: Evaluate future switch to a simple GUI
 """
 
+from datetime import datetime
+
 from ITAQA.core import AirQualityStation
-from ITAQA.crawler import piemonte
+from ITAQA.crawler import lombardia
 
 import csv
 import ipdb
@@ -15,12 +17,10 @@ import ipdb
 
 def main():
 
-    # WIP
-    data_piemonte = piemonte.get_PM10_csv()
+    minimum_date = datetime(year=2020, month=4, day=30)
+    now = datetime.now()
 
-    with open('piemonte.csv', 'w') as csvfile:
-        csvfile.write(data_piemonte)
-
+    AQS_lombardia = lombardia.get_AQS_list(dt_range=[minimum_date, now], redownload=False)
     ipdb.set_trace()
 
 

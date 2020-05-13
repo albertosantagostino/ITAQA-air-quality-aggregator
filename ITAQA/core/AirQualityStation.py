@@ -4,8 +4,9 @@
 Class AirQualityStation
 """
 
-from datetime import datetime
 import pandas as pd
+import uuid
+from datetime import datetime
 
 from ITAQA.geography import Italy, converter
 
@@ -45,9 +46,11 @@ class AirQualityStation():
         self.comune = None
         self.geolocation = None
 
-        # Metadata and data
-        # TODO: Make this UTC
-        self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S")}
+        # Metadata
+        # TODO: Make creation time UTC
+        self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S"), 'uuid': uuid.uuid4()}
+
+        # Data
         self.data = pd.DataFrame()
 
     def __repr__(self):
@@ -57,8 +60,9 @@ class AirQualityStation():
         print_str = f"AirQualityStation\n\nName:\t\t{self.station_name:20}\n"
         print_str += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
         print_str += f"Geolocation:\t{self.geolocation}\n"
+        print_str += f"Data stored:\t{self.data.shape} (Total: {self.data.size})\n"
         # TODO: Print also amount of data stored and available pollutants in a compact way
-        print_str += f"Metadata:\t{self.metadata}"
+        #print_str += f"Metadata:\t{self.metadata}"
         return print_str
 
     def set_address(self, region=None, province=None, comune=None):

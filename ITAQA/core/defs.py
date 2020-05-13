@@ -9,7 +9,6 @@ from enum import Enum, auto
 
 class Pollutant(Enum):
     """Enum holding pollutant types"""
-    # TODO: How do we want to support different measurement types? (8h/24h ...)
     # yapf: disable
     PM10    = auto()
     PM2_5   = auto()
