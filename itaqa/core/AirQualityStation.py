@@ -4,10 +4,10 @@
 Class AirQualityStation
 """
 
-import pandas as pd
 import uuid
-from datetime import datetime
+import json
 import pandas as pd
+from datetime import datetime
 
 from itaqa.geography import Italy, converter
 
@@ -17,29 +17,29 @@ class AirQualityStation():
     Represent an air quality measurament from a specific sensor/station
 
     Args:
-        station_name (str): Name of the station
+        name (str): Name of the station
 
     Attributes:
-        station_name (str): Name of the station
+        name (str): Name of the station
         region (Italy.Region): Region in which the station is located
         province (Italy.Province): Province in which the station is located
         comune (str): Comune in which the station is located
-        geolocation (tuple): Geographic coordinates in the format (lat, lng, alt)
-        metadata(dict): Information on the object
+        geolocation (list): Geographic coordinates (lat, lng, alt)
+        metadata(dict): Information on station, data, and uuid
         data(pandas.DataFrame): Air pollution data of the station
 
     Examples:
         AirQualityStation("Torino Rebaudengo")
 
     Raises:
-        ValueError: If station_name is empty
+        ValueError: If name is empty
     """
-    def __init__(self, station_name):
-        # Validate service name
-        if not station_name:
+    def __init__(self, name):
+        # Validate station name
+        if not name:
             raise ValueError("Station name cannot be empty")
         else:
-            self.station_name = station_name
+            self.name = name
 
         # Geographic information on the location of the station
         self.region = Italy.Region.UNSET
@@ -49,16 +49,16 @@ class AirQualityStation():
 
         # Metadata
         # TODO: Make creation time UTC
-        self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S"), 'uuid': uuid.uuid4()}
+        self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S"), 'uuid': str(uuid.uuid4())}
 
         # Data
         self.data = pd.DataFrame()
 
     def __repr__(self):
-        return f"AirQualityStation('{self.station_name}','{self.region}','{self.province},'{self.comune}')"
+        return f"AirQualityStation('{self.name}','{self.region}','{self.province},'{self.comune}')"
 
     def __str__(self):
-        print_str = f"AirQualityStation\n\nName:\t\t{self.station_name:20}\n"
+        print_str = f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
         print_str += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
         print_str += f"Geolocation:\t{self.geolocation}\n"
         print_str += f"Data stored:\t{self.data.shape} (Total: {self.data.size})\n"
@@ -78,7 +78,7 @@ class AirQualityStation():
     def set_geolocation(self, lat, lng, alt=None):
         """Set geographic coordinates of the station"""
         # TODO: Validate coordinates, catch invalid values
-        self.geolocation = (lat, lng, alt)
+        self.geolocation = [lat, lng, alt]
 
     def update_data(self, data_pd):
         """Set pollution DataFrame"""
@@ -87,3 +87,34 @@ class AirQualityStation():
         # TODO: Validate data before assignment, check if in the expected format
         # TODO: Update metadata information (data stored, max date, min date, measured pollutants)
         self.data = data_pd
+
+
+def encode_msgpack(obj):
+    """Encoder for serialization, from AQS to msgpack"""
+    if isinstance(obj, AirQualityStation):
+        return {
+            '__AirQualityStation__': True,
+            'm_name': obj.name,
+            'm_region': obj.region.value,
+            'm_province': obj.province.value,
+            'm_comune': obj.comune,
+            'm_geolocation': obj.geolocation,
+            'm_metadata': json.dumps(obj.metadata),
+            'm_data': obj.data.to_json()
+        }
+    else:
+        return None
+
+
+def decode_msgpack(obj):
+    """Decoder for serialization, from msgpack to AQS"""
+    decoded_obj = None
+    if '__AirQualityStation__' in obj:
+        decoded_obj = AirQualityStation(obj['m_name'])
+        decoded_obj.region = Italy.Region(obj['m_region'])
+        decoded_obj.province = Italy.Province(obj['m_province'])
+        decoded_obj.comune = obj['m_comune']
+        decoded_obj.geolocation = obj['m_geolocation']
+        decoded_obj.metadata = json.loads(obj['m_metadata'])
+        decoded_obj.data = pd.DataFrame(json.loads(obj['m_data']))
+    return decoded_obj
