@@ -1,12 +1,14 @@
 # Italy Air Quality Aggregator (ITAQA)
 
-This project aims to build a set of tools able to **aggregate** Italy air quality data, collecting automatically pollution measurements from different sources and providing a framework to query data and create visualizations
+![ITAQA](docs/img/banner.png)
 
-### The "question" that sparked this project
+This project is a framework built to **aggregate** Italy air quality data, collecting automatically pollution measurements from different sources and providing scripts to query data and create visualizations
 
-The idea of collecting and measuring air pollution in this period of time originated from this question/idea:
+### The question that sparked this project
 
-> As a consequence of the SARS-CoV-2 outbreak in Italy ([Wikipedia link](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy)), will there be a measurable **effect on the air pollution** in the affected region(s) due to the "more people working from home therefore **less traffic**" effect? And if yes, will it be "synced" with the different level of "quarantine" decided/imposed by the Italian government in these weeks/months? If yes, in which way?
+The idea of collecting and measuring air pollution in this period of time originated from this thought:
+
+> As a consequence of the SARS-CoV-2 outbreak in Italy ([Wikipedia link](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy)), will there be a measurable **effect on the air pollution** in the affected region(s) due to the "more people working from home therefore **less traffic**" effect? If yes, is this reduction strongly correlated with the level of lockdown enforced by the Italian government in these weeks/months?
 
 More in general, the purpose of this tool is to provide national air pollution data in an **uniform and accessible way**
 
@@ -29,22 +31,21 @@ _Fromnobody Answered Questions_
 
 **Why make this project? Why not reuse one of the already existing air quality plots and websites?**
 
-> The first use case is to investigate the thesis above ("*quarantine has measurable effect on air quality?"*)  
-> Nevertheless, the aim of this project is broader: create a set of reusable air quality analysis tools that unify all different sources from Italy's regions
+> The first use case is to investigate the thesis above ("*Has lockdown a measurable effect on air quality? In what measure?"*)  
+> Nevertheless, the aim of this project is broader: create a set of reusable air quality analysis tools that unify all different sources from the regions of Italy
 
 **There is already an air quality/pollution aggregator, you can find it and use it at this link...**
 
-> Nice! But I didn't check if this thing was already existing, because if I do this all the time, I wouldn't get any projects done :)  
-> I'm also developing this as a personal project, to learn stuff in the process
+> Nice! I didn't check if this thing was already existing, because if I do this all the time, I wouldn't get any projects done :)  
+> (I'm mainly developing this as a personal project, to learn stuff in the process)
 
 **What are these regional "ARPA"?**
 
-> These are *"Agenzie Regionali per la Protezione Ambientale"* (*Regional Environmental Protection Agency*), Italian governmental agencies that collect and analyze data on air, water, acoustic and soil pollution on the national territory
+> These are *"Agenzie Regionali per la Protezione Ambientale"* (*Regional Environmental Protection Agency*), Italian governmental agencies that collect and analyze air, water, acoustic and soil pollution data on all the territory
 
 **Can I contribute?**
 
 > Yes, of course, as soon as the project is structured enough, refer to [CONTRIBUTING](CONTRIBUTING.md)  
-> (Right now I have zero expectations on the final state of the project, I don't even know why I'm writing a FAQ section, but nevertheless this repository is and will stay public)
 
 ## ARPA Websites
 
@@ -71,7 +72,10 @@ _Fromnobody Answered Questions_
 | [Valle d'Aosta](http://www.comuni-italiani.it/02/index.html) | [ARPA Valle d'Aosta](https://www.arpa.vda.it/it)             |                    |
 | [Veneto](http://www.comuni-italiani.it/05/index.html)        | [ARPA Veneto](https://www.arpa.veneto.it/)                   |                    |
 
+## Credits
+
+Banner mountain icon derived. Original by [Freepik](https://www.flaticon.com/authors/freepik) from [flaticon.com](https://www.flaticon.com)
+
 ## License
 
 This project and its source code are distributed under the [GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-3.0/)
-
