@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Utilities for geography-related conversions
+Utilities for geography related conversions
 """
 
 from itaqa.geography.Italy import Province

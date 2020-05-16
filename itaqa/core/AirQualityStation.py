@@ -49,6 +49,7 @@ class AirQualityStation():
 
         # Metadata
         # TODO: Make creation time UTC
+        # TODO: Create a function to update metadata information (max date, min date, measured pollutants)
         self.metadata = {'creation': datetime.now().strftime("%Y%m%dT%H%M%S"), 'uuid': str(uuid.uuid4())}
 
         # Data
@@ -79,14 +80,6 @@ class AirQualityStation():
         """Set geographic coordinates of the station"""
         # TODO: Validate coordinates, catch invalid values
         self.geolocation = [lat, lng, alt]
-
-    def update_data(self, data_pd):
-        """Set pollution DataFrame"""
-        # TODO: Don't write again data already present (if provided with new days, update the dataframe)
-        # TODO: Days on rows and pollutants on columns
-        # TODO: Validate data before assignment, check if in the expected format
-        # TODO: Update metadata information (data stored, max date, min date, measured pollutants)
-        self.data = data_pd
 
 
 def encode_msgpack(obj):

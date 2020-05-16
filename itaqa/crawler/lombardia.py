@@ -16,7 +16,7 @@ from datetime import datetime
 from itaqa.core.defs import Pollutant
 from itaqa.core.AirQualityStation import AirQualityStation
 from itaqa.geography import Italy
-from itaqa.utils import csv_utils
+from itaqa.utils import csv_utils, pandas_utils
 
 
 def get_AQS_list(dt_range, redownload=False):
@@ -40,7 +40,7 @@ def get_AQS_list(dt_range, redownload=False):
     metadata_reader, metadata_len = csv_utils.read_csv('dump/lombardia/metadata.out')
     data_reader, data_len = csv_utils.read_csv('dump/lombardia/data.out')
 
-    # Create metadata DataFrame
+    # Create metadata
     header_row = next(metadata_reader, None)
     # Fix rows with wrong title
     header_row[16] = 'Limiti amministrativi 2014'
@@ -57,12 +57,13 @@ def get_AQS_list(dt_range, redownload=False):
         sensor_id = int(row[0])
         metadata_dict[sensor_id] = {key: value for (key, value) in tuplelist}
     metadata_pd = pd.DataFrame(metadata_dict)
-    # Create an AirQualityStation object for each station in metadata
+
+    # Create an AirQualityStation for each station in metadata
     stations_dict = {}
     ignored_pollutants = set()
     for key in metadata_pd:
         station = metadata_pd[key]
-        # Check if the station is still active (TODO: Refactor/remove)
+        # Check if the station is still active. If not, ignore it (TODO: Refactor/remove)
         if not station.datastop:
             station_name = station['nomestazione']
             AQS = AirQualityStation(station_name)
@@ -71,10 +72,11 @@ def get_AQS_list(dt_range, redownload=False):
                             comune=station['comune'])
             AQS.set_geolocation(lat=station['lat'], lng=station['lng'], alt=station['quota'])
             pollutant = get_pollutant_enum(station['nometiposensore'])
+            # If the station is measuring a pollutant of interest
             if pollutant:
                 if AQS.data.empty:
-                    data_pd = pd.DataFrame(index=[pollutant.name])
-                    AQS.update_data(data_pd)
+                    data_pd = pd.DataFrame(columns=['DT', pollutant.name])
+                    AQS.data = data_pd
                 else:
                     warnings.warn("Dataframe should be empty at this step", RuntimeWarning)
                 stations_dict[str(key)] = AQS
@@ -85,35 +87,37 @@ def get_AQS_list(dt_range, redownload=False):
     for pt in ignored_pollutants:
         print(f"- {pt}")
 
-    # Fill stations with data from DataFrame
+    # Fill AQS objects with data, reading the data CSV row by row
     header_row = next(data_reader, None)
     with progressbar.ProgressBar(max_value=data_len) as bar:
         for row in data_reader:
-            # Include only data with specified date
             datetime_object = datetime.strptime(row[1], '%d/%m/%Y %I:%M:%S %p')
+            # Include only data in specified datetime range
             if (datetime_object >= min_dt) and (datetime_object <= max_dt):
-                # Check measurament validity
                 if (row[2] != '-9999'):
                     sensor_id = row[0]
-                    # If the sensor_id of the measurament is known
                     if sensor_id in stations_dict:
                         AQS = stations_dict[sensor_id]
-                        # Convert datetime in correct format
-                        date = datetime_object.strftime('%Y%m%dT%H%M%S')
-                        # Fill data
-                        if len(AQS.data.index) != 1:
-                            warnings.warn("Dataframe should have only one index at this step", RuntimeWarning)
-                        AQS.data.at[AQS.data.index[0], date] = row[2]
+                        dt = datetime_object.strftime('%Y%m%dT%H%M%S')
+                        new_data_df = pd.DataFrame([[dt, row[2]]], columns=AQS.data.columns)
+                        AQS.data = AQS.data.append(new_data_df, ignore_index=True)
                     else:
-                        warnings.warn(f"{sensor_id} is not present in metadata dict. Please check", RuntimeWarning)
+                        warnings.warn(f"Sensor {sensor_id} is not present in metadata dict", RuntimeWarning)
             bar.update(data_reader.line_num)
 
+    # Manipulate filled stations
     remove_empty_stations(stations_dict)
-    correlation_map = aggregate_stations(stations_dict)
+    # correlation_map = aggregate_stations(stations_dict)
     # unify_stations(stations_dict, correlation_map)
 
-    # Convert dict to list and return it
-    return [v for v in stations_dict.values()]
+    # Convert dict to list
+    stations_list = [v for v in stations_dict.values()]
+
+    # Set index and sort each station data
+    for station in stations_list:
+        station.data = pandas_utils.set_index_and_sort(station.data, 'DT')
+
+    return stations_list
 
 
 def remove_empty_stations(stations_dict, min_entries=1):
@@ -136,7 +140,7 @@ def aggregate_stations(stations_dict):
     """
     # TODO: Return correlation_map based on metadata['uuid'], not on metadata id
     # Create a map id:name
-    station_names_dict = {station_id: station.station_name for station_id, station in stations_dict.items()}
+    station_names_dict = {station_id: station.name for station_id, station in stations_dict.items()}
 
     correlation_map = collections.defaultdict(list)
     for k, v in station_names_dict.items():
