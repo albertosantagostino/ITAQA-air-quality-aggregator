@@ -10,7 +10,7 @@ The idea of collecting and measuring air pollution in this period of time origin
 
 > As a consequence of the SARS-CoV-2 outbreak in Italy ([Wikipedia link](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy)), will there be a measurable **effect on the air pollution** in the affected region(s) due to the "more people working from home therefore **less traffic**" effect? If yes, is this reduction strongly correlated with the level of lockdown enforced by the Italian government in these weeks/months?
 
-More in general, the purpose of this tool is to provide national air pollution data in an **uniform and accessible way**
+More in general, the purpose of the framework is to provide national air pollution data in an **uniform and accessible way**
 
 ## Objectives
 
@@ -43,9 +43,13 @@ _Fromnobody Answered Questions_
 
 > These are *"Agenzie Regionali per la Protezione Ambientale"* (*Regional Environmental Protection Agency*), Italian governmental agencies that collect and analyze air, water, acoustic and soil pollution data on all the territory
 
+**Do you plan to publish some visualizations/plots produced?**
+
+> Yes! As soon as I have something worth showing that I consider interesting, I will publish it in [my blog](https://albertosantagostino.github.io/)
+
 **Can I contribute?**
 
-> Yes, of course, as soon as the project is structured enough, refer to [CONTRIBUTING](CONTRIBUTING.md)  
+> Yes, of course, as soon as the project is structured enough, refer to [CONTRIBUTING](CONTRIBUTING.md)
 
 ## ARPA Websites
 
