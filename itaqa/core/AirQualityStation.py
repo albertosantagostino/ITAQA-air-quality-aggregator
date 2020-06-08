@@ -7,6 +7,8 @@ Class AirQualityStation
 import uuid
 import json
 import pandas as pd
+
+from copy import deepcopy
 from datetime import datetime
 
 from itaqa.geography import Italy, converter
@@ -29,7 +31,7 @@ class AirQualityStation():
         data(pandas.DataFrame): Air pollution data of the station
 
     Examples:
-        AirQualityStation("Torino Rebaudengo")
+        AirQualityStation('Torino Rebaudengo')
 
     Raises:
         ValueError: If name is empty
@@ -67,6 +69,10 @@ class AirQualityStation():
         #print_str += f"Metadata:\t{self.metadata}"
         return print_str
 
+    def __lt__(self, other):
+        """Comparator operator, sort based on name (for grouping)"""
+        return self.name < other.name
+
     def set_address(self, region=None, province=None, comune=None):
         """Set region, province, comune of the station"""
         if region and isinstance(region, Italy.Region):
@@ -82,32 +88,37 @@ class AirQualityStation():
         self.geolocation = [lat, lng, alt]
 
 
-def encode_msgpack(obj):
-    """Encoder for serialization, from AQS to msgpack"""
-    if isinstance(obj, AirQualityStation):
+def encode_msgpack(AQS):
+    """Encoder from AQS to msgpack"""
+    if isinstance(AQS, AirQualityStation):
+        # Convert pd.Timestamp to Unix time before encoding (ensure original object is not modified)
+        AQS_data_copy = deepcopy(AQS.data)
+        AQS_data_copy['Timestamp'] = AQS_data_copy['Timestamp'].map(lambda dt: int(dt.value / (10**9)))
         return {
             '__AirQualityStation__': True,
-            'm_name': obj.name,
-            'm_region': obj.region.value,
-            'm_province': obj.province.value,
-            'm_comune': obj.comune,
-            'm_geolocation': obj.geolocation,
-            'm_metadata': json.dumps(obj.metadata),
-            'm_data': obj.data.to_json()
+            'm_name': AQS.name,
+            'm_region': AQS.region.value,
+            'm_province': AQS.province.value,
+            'm_comune': AQS.comune,
+            'm_geolocation': AQS.geolocation,
+            'm_metadata': json.dumps(AQS.metadata),
+            'm_data': AQS_data_copy.to_json()
         }
     else:
         return None
 
 
 def decode_msgpack(obj):
-    """Decoder for serialization, from msgpack to AQS"""
-    decoded_obj = None
+    """Decoder from msgpack to AQS"""
+    AQS = None
     if '__AirQualityStation__' in obj:
-        decoded_obj = AirQualityStation(obj['m_name'])
-        decoded_obj.region = Italy.Region(obj['m_region'])
-        decoded_obj.province = Italy.Province(obj['m_province'])
-        decoded_obj.comune = obj['m_comune']
-        decoded_obj.geolocation = obj['m_geolocation']
-        decoded_obj.metadata = json.loads(obj['m_metadata'])
-        decoded_obj.data = pd.DataFrame(json.loads(obj['m_data']))
-    return decoded_obj
+        AQS = AirQualityStation(obj['m_name'])
+        AQS.region = Italy.Region(obj['m_region'])
+        AQS.province = Italy.Province(obj['m_province'])
+        AQS.comune = obj['m_comune']
+        AQS.geolocation = obj['m_geolocation']
+        AQS.metadata = json.loads(obj['m_metadata'])
+        AQS.data = pd.DataFrame(json.loads(obj['m_data']))
+        # Convert Unix time to pd.Timestamp after decoding
+        AQS.data['Timestamp'] = AQS.data['Timestamp'].map(lambda unix_time: pd.Timestamp(unix_time * (10**9)))
+    return AQS

@@ -1,3 +1,4 @@
+# Cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -25,4 +26,7 @@ MANIFEST
 .vscode/
 
 # Dump
-dump/**
+dump/
+
+# Test
+.pytest_cache/

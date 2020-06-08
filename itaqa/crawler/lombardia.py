@@ -28,17 +28,25 @@ def get_AQS_list(dt_range, redownload=False):
     """
 
     min_dt, max_dt = dt_range
-
     if redownload:
         # Download data from ARPA Lombardia
         metadata_url = 'https://www.dati.lombardia.it/resource/ib47-atvt.csv'
-        data_url = 'https://www.dati.lombardia.it/api/views/nicp-bhqi/rows.csv'
-        csv_utils.download_csv(metadata_url, 'dump/metadata.out')
-        csv_utils.download_csv(data_url, 'dump/data.out')
+        if min_dt.year == max_dt.year:
+            ref_year = min_dt.year
+            if ref_year == 2020:
+                data_url = 'https://www.dati.lombardia.it/api/views/nicp-bhqi/rows.csv'
+            elif ref_year == 2019:
+                data_url = 'https://www.dati.lombardia.it/api/views/kujm-kavy/rows.csv'
+            else:
+                raise ValueError('Data table unknown for the specified year')
+        else:
+            raise ValueError("Cannot use different years as min and max date for now")
+        csv_utils.download_csv(metadata_url, f'dump/lombardia/metadata_{ref_year}.out')
+        csv_utils.download_csv(data_url, f'dump/lombardia/data_{ref_year}.out')
 
     # TODO: Check that csv columns are the expected ones (consolidate csv)
-    metadata_reader, metadata_len = csv_utils.read_csv('dump/lombardia/metadata.out')
-    data_reader, data_len = csv_utils.read_csv('dump/lombardia/data.out')
+    metadata_reader, metadata_len = csv_utils.read_csv(f'dump/lombardia/metadata_{ref_year}.out')
+    data_reader, data_len = csv_utils.read_csv(f'dump/lombardia/data_{ref_year}.out')
 
     # Create metadata
     header_row = next(metadata_reader, None)
@@ -75,7 +83,7 @@ def get_AQS_list(dt_range, redownload=False):
             # If the station is measuring a pollutant of interest
             if pollutant:
                 if AQS.data.empty:
-                    data_pd = pd.DataFrame(columns=['DT', pollutant.name])
+                    data_pd = pd.DataFrame(columns=['Timestamp', pollutant.name])
                     AQS.data = data_pd
                 else:
                     warnings.warn("Dataframe should be empty at this step", RuntimeWarning)
@@ -83,7 +91,7 @@ def get_AQS_list(dt_range, redownload=False):
             else:
                 ignored_pollutants.add(station['nometiposensore'])
 
-    print("The following pollutant stations were ignored:")
+    print("The following pollutants were ignored:")
     for pt in ignored_pollutants:
         print(f"- {pt}")
 
@@ -98,7 +106,7 @@ def get_AQS_list(dt_range, redownload=False):
                     sensor_id = row[0]
                     if sensor_id in stations_dict:
                         AQS = stations_dict[sensor_id]
-                        dt = datetime_object.strftime('%Y%m%dT%H%M%S')
+                        dt = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
                         new_data_df = pd.DataFrame([[dt, row[2]]], columns=AQS.data.columns)
                         AQS.data = AQS.data.append(new_data_df, ignore_index=True)
                     else:
@@ -113,9 +121,12 @@ def get_AQS_list(dt_range, redownload=False):
     # Convert dict to list
     stations_list = [v for v in stations_dict.values()]
 
-    # Set index and sort each station data
+    # Sort by timestamp and reset index of each DataFrame
     for station in stations_list:
-        station.data = pandas_utils.set_index_and_sort(station.data, 'DT')
+        station.data.sort_values(by='Timestamp', inplace=True)
+        station.data.reset_index(drop=True, inplace=True)
+    # Sort by name
+    stations_list.sort()
 
     return stations_list
 
@@ -139,6 +150,7 @@ def aggregate_stations(stations_dict):
     Returns a map of all stations id that probably refer to the same place
     """
     # TODO: Return correlation_map based on metadata['uuid'], not on metadata id
+    # TODO: Deprecated due to new function that uses name for aggregation
     # Create a map id:name
     station_names_dict = {station_id: station.name for station_id, station in stations_dict.items()}
 

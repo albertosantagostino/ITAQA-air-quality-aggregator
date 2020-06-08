@@ -11,4 +11,3 @@ Architecture schemes made with **[Excalidraw](https://excalidraw.com/)**
 **Libraries/packages**
 
 All libraries in [requirements.txt](requirements.txt)
-
