@@ -4,9 +4,9 @@
 Class AirQualityStation
 """
 
-import uuid
 import json
 import pandas as pd
+import uuid
 
 from copy import deepcopy
 from datetime import datetime

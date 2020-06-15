@@ -4,11 +4,12 @@
 Utilities to handle and manipulate multiple AQS objects
 """
 
-from itaqa.core import AirQualityStation
-
 import pandas as pd
+
 from itertools import groupby
 from collections import defaultdict
+
+from itaqa.core import AirQualityStation
 
 
 def group_by_name(AQS_list):
@@ -30,6 +31,7 @@ def merge_group(AQS_group):
         new_AQS.set_address(region=AQS_group[k][0].region,
                             province=AQS_group[k][0].province,
                             comune=AQS_group[k][0].comune)
+        # TODO: Compute geolocation
         new_AQS.metadata['premerge_history'] = {}
         frames = []
 

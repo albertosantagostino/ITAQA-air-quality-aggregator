@@ -4,9 +4,9 @@
 Utilities to handle CSV files
 """
 
-import requests
 import csv
 import pickle
+import requests
 
 
 def save_csv(csv_data, relative_file_path):

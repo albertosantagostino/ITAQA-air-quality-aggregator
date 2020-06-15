@@ -4,17 +4,16 @@
 Lombardia data downloader and parser
 """
 
+import collections
 import csv
 import warnings
-import collections
-
 import pandas as pd
 import progressbar
 
 from datetime import datetime
 
-from itaqa.core.defs import Pollutant
 from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.core.defs import Pollutant
 from itaqa.geography import Italy
 from itaqa.utils import csv_utils, pandas_utils
 

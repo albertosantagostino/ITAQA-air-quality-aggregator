@@ -4,10 +4,11 @@
 Emilia-Romagna data downloader and parser
 """
 
+import pandas as pd
+import urllib
+
 from datetime import datetime, timedelta
 from functools import reduce
-import urllib
-import pandas as pd
 
 from itaqa.core.defs import Pollutant
 

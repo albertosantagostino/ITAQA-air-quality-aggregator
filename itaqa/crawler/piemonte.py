@@ -4,9 +4,10 @@
 Piemonte data downloader and parser
 """
 
-import urllib
 import pandas as pd
 import re
+import urllib
+
 from bs4 import BeautifulSoup
 
 
