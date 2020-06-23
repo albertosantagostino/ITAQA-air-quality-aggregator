@@ -1,5 +1,8 @@
 # Italy Air Quality Aggregator (ITAQA)
 
+![Latest commit](https://img.shields.io/github/last-commit/albertosantagostino/ITAQA-air-quality-aggregator?label=latest%20commit)
+![Open issues](https://img.shields.io/github/issues-raw/albertosantagostino/ITAQA-air-quality-aggregator)
+
 ![ITAQA](docs/img/banner.png)
 
 This project is a framework built to **aggregate** Italy air quality data, collecting automatically pollution measurements from different sources and providing scripts to query data and create visualizations
