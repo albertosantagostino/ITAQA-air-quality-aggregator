@@ -22,7 +22,7 @@ def group_by_name(AQS_list):
     return AQS_by_name
 
 
-def merge_group(AQS_group):
+def merge_by_group(AQS_group):
     """Merge multiple groups of AQS and return a list of merged AQS objects"""
     merged_AQS_list = []
     for k in AQS_group:

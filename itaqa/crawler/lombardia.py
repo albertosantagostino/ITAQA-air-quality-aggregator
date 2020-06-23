@@ -4,9 +4,8 @@
 Lombardia data downloader and parser
 """
 
-import collections
 import csv
-import warnings
+import logging
 import pandas as pd
 import progressbar
 
@@ -15,31 +14,36 @@ from datetime import datetime
 from itaqa.core.AirQualityStation import AirQualityStation
 from itaqa.core.defs import Pollutant
 from itaqa.geography import Italy
-from itaqa.utils import csv_utils, pandas_utils
+from itaqa.utils import csv_utils
+
+logger = logging.getLogger(__name__)
 
 
-def get_AQS_list(dt_range, redownload=False):
+def get_AQS_list(dt_range, redownload):
     """
     Return the list of the air quality stations from Lombardia
 
     Data origin: ARPA Lombardia
     Website: https://www.dati.lombardia.it
     """
-
     min_dt, max_dt = dt_range
-    if redownload:
-        # Download data from ARPA Lombardia
-        metadata_url = 'https://www.dati.lombardia.it/resource/ib47-atvt.csv'
-        if min_dt.year == max_dt.year:
-            ref_year = min_dt.year
-            if ref_year == 2020:
-                data_url = 'https://www.dati.lombardia.it/api/views/nicp-bhqi/rows.csv'
-            elif ref_year == 2019:
-                data_url = 'https://www.dati.lombardia.it/api/views/kujm-kavy/rows.csv'
-            else:
-                raise ValueError('Data table unknown for the specified year')
+
+    metadata_url = 'https://www.dati.lombardia.it/resource/ib47-atvt.csv'
+    if min_dt.year == max_dt.year:
+        ref_year = min_dt.year
+        if ref_year == 2020:
+            data_url = 'https://www.dati.lombardia.it/api/views/nicp-bhqi/rows.csv'
+        elif ref_year == 2019:
+            data_url = 'https://www.dati.lombardia.it/api/views/kujm-kavy/rows.csv'
         else:
-            raise ValueError("Cannot use different years as min and max date for now")
+            raise ValueError('Data table unknown for the specified year')
+    else:
+        raise ValueError("Cannot use different years as min and max date for now")
+
+    # Download data from ARPA Lombardia
+    # TODO: Check if redownload is false but no data is present locally
+    if redownload:
+        logger.info("Started download from ARPA Lombardia")
         csv_utils.download_csv(metadata_url, f'dump/lombardia/metadata_{ref_year}.out')
         csv_utils.download_csv(data_url, f'dump/lombardia/data_{ref_year}.out')
 
@@ -85,17 +89,16 @@ def get_AQS_list(dt_range, redownload=False):
                     data_pd = pd.DataFrame(columns=['Timestamp', pollutant.name])
                     AQS.data = data_pd
                 else:
-                    warnings.warn("Dataframe should be empty at this step", RuntimeWarning)
+                    logger.warning("Dataframe should be empty at this step")
                 stations_dict[str(key)] = AQS
             else:
                 ignored_pollutants.add(station['nometiposensore'])
 
-    print("The following pollutants were ignored:")
-    for pt in ignored_pollutants:
-        print(f"- {pt}")
-
     # Fill AQS objects with data, reading the data CSV row by row
     header_row = next(data_reader, None)
+    missing_sensors = set()
+    # TODO: Make the progress bar representative
+    print("(The status bar is not representative right now (will be fixed), it should take less than indicated")
     with progressbar.ProgressBar(max_value=data_len) as bar:
         for row in data_reader:
             datetime_object = datetime.strptime(row[1], '%d/%m/%Y %I:%M:%S %p')
@@ -109,13 +112,18 @@ def get_AQS_list(dt_range, redownload=False):
                         new_data_df = pd.DataFrame([[dt, row[2]]], columns=AQS.data.columns)
                         AQS.data = AQS.data.append(new_data_df, ignore_index=True)
                     else:
-                        warnings.warn(f"Sensor {sensor_id} is not present in metadata dict", RuntimeWarning)
+                        missing_sensors.add(sensor_id)
             bar.update(data_reader.line_num)
 
-    # Manipulate filled stations
+    # Notify the user on parsing outcome
+    if missing_sensors:
+        logger.warn("Some sensors were not present in metadata dict")
+        print([sensor_id for sensor_id in missing_sensors])
+    if ignored_pollutants:
+        logger.info("Some pollutants were ignored")
+        print([pt for pt in ignored_pollutants])
+
     remove_empty_stations(stations_dict)
-    # correlation_map = aggregate_stations(stations_dict)
-    # unify_stations(stations_dict, correlation_map)
 
     # Convert dict to list
     stations_list = [v for v in stations_dict.values()]
@@ -142,35 +150,6 @@ def remove_empty_stations(stations_dict, min_entries=1):
     # Delete empty entries
     for key in targets:
         del stations_dict[key]
-
-
-def aggregate_stations(stations_dict):
-    """
-    Returns a map of all stations id that probably refer to the same place
-    """
-    # TODO: Return correlation_map based on metadata['uuid'], not on metadata id
-    # TODO: Deprecated due to new function that uses name for aggregation
-    # Create a map id:name
-    station_names_dict = {station_id: station.name for station_id, station in stations_dict.items()}
-
-    correlation_map = collections.defaultdict(list)
-    for k, v in station_names_dict.items():
-        correlation_map[v].append(str(k))
-
-    return correlation_map
-
-
-def unify_stations(stations_dict, correlation_map):
-    """
-    TODO: Is this needed?
-    Unify stations that are geographically nearby
-    """
-    for key in correlation_map:
-        AQSs = []
-        stations = correlation_map[key]
-        for station_id in stations:
-            AQSs.append(stations_dict[str(station_id)])
-        # TODO: Check distance and if needed unify
 
 
 def get_pollutant_enum(pollutant_name):

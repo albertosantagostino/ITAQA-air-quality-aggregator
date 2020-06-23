@@ -12,18 +12,56 @@ The idea of collecting and measuring air pollution in this period of time origin
 
 More in general, the purpose of the framework is to provide national air pollution data in an **uniform and accessible way**
 
+If you are interested in learning more on the origin of ITAQA, read [this post on my blog](https://albertosantagostino.github.io/blog/2020/05/29/ITAQA_introduction_en)
+
 ## Objectives
 
-* Create a single place from which orchestrate the download of data from different Italy regions and sources (mostly **ARPA** websites)
-  * ARPA websites a lot different among the various regions (as an example, see the websites of [ARPA Piemonte](http://www.arpa.piemonte.it/) vs [ARPA Lombardia](https://www.arpalombardia.it/Pages/ARPA_Home_Page.aspx) vs [ARPA Emilia-Romagna](https://www.arpae.it/))
-    As far as I know there isn't a single way to collect pollution data from all the stations distributed on the whole country with an ideal "single national API call"
+* Create a single place to orchestrate the download of pollution data from different Italy regions (through **ARPA** websites)
+  * Unfortunately, ARPA websites are very diverse among Italian regions (as an example, see the websites of [ARPA Piemonte](http://www.arpa.piemonte.it/) vs [ARPA Lombardia](https://www.arpalombardia.it/Pages/ARPA_Home_Page.aspx) vs [ARPA Emilia-Romagna](https://www.arpae.it/))
+    As far as I know a single way to collect pollution data from all the stations distributed on the whole country with a "single national API call" doesn't exist
 * Build a tool to graphically visualize data and history of pollutants in different areas of the country
 * Search correlation between big "behavior-changing" events and air pollution
 
+## Usage
+
+#### Overview
+
+The core concept of ITAQA are **AirQualityStation** (or **AQS**) objects. They represent sensors holding time indexed pollution data for a specific location. Data download is performed by **crawlers**, scripts that obtain pollution records for a specific region and time, parse and store them in **lists of AQS objects**
+
+#### Installation
+
+Clone the repository (`git clone git@github.com:albertosantagostino/ITAQA-air-quality-aggregator.git`), check that you have Python 3.8 (`python --version`) and install the needed packages (bare `pip install -r requirements.txt` or if you prefer through `virtualenv`)
+
+#### Invocation
+
+The entrypoint is the script `itaqa.py`. Run it using the `-h` parameter to see the help
+
+```
+itaqa.py [MODE] [parameters] [-h]
+```
+
+**Available modes**
+
+```
+download 	Download data, serialize and save it in a list of AQS objects
+update		Given an existing AQS objects list, update it with the most recent data
+test	    Run all the unit tests
+sandbox     For debugging/testing purposes
+```
+
+**Example**
+To check if everything is working fine you can try to run the following command to download data from the Lombardia region for the first month of 2020:
+`python itaqa.py download --region lombardia --min_date 20200101 --max_date 20200201 --filename test`
+If everything is working fine you should see the message _"Download completed!"_. Note that at the moment the time indicated in the progress bar is not accurate. Downloading a month of data should take ~3 minutes
+
+**Data analysis**
+Currently ITAQA is for developers only, meaning there is no easy user interface to plot and visualize data (yet!)
+After you have downloaded some data you can play and explore in the sandbox (loading data with `load_AQS_from_msgpack`)
+
 ## Architecture
-
-![Architecture 0.1](docs/architecture/architecture.png)
-
+<p align="center">
+  <img src="docs/architecture/architecture.png" title="ITAQA Architecture" width="500" />
+</p>
 
 ## FAQ
 

@@ -30,3 +30,6 @@ dump/
 
 # Test
 .pytest_cache/
+
+# Logs
+logs/
