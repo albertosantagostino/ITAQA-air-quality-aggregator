@@ -46,10 +46,10 @@ itaqa.py [MODE] [parameters] [-h]
 **Available modes**
 
 ```
-download 	Download data, serialize and save it in a list of AQS objects
-update		Given an existing AQS objects list, update it with the most recent data
-test	    Run all the unit tests
-sandbox     For debugging/testing purposes
+download      Download data, serialize and save it in a list of AQS objects
+update        Given an existing AQS objects list, update it with the most recent data
+test          Run all the unit tests
+sandbox       For debugging/testing purposes
 ```
 
 **Example**
