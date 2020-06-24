@@ -54,7 +54,7 @@ sandbox       For debugging/testing purposes
 
 **Example**
 To check if everything is working fine you can try to run the following command to download data from the Lombardia region for the first month of 2020:
-`python itaqa.py download --region lombardia --min_date 20200101 --max_date 20200201 --filename test`
+`python3 itaqa.py download --region lombardia --min_date 20200101 --max_date 20200201 --filename test`
 If everything is working fine you should see the message _"Download completed!"_. Note that at the moment the time indicated in the progress bar is not accurate. Downloading a month of data should take ~3 minutes
 
 **Data analysis**

@@ -88,8 +88,8 @@ if __name__ == "__main__":
     desc = f"+{30*'-'}+\n|{12*' '}ITAQA{13*' '}|\n|{30*' '}|\n| ITaly Air Quality Aggregator |\n+{30*'-'}+\n\n"
     desc += "This script is the entrypoint of the project. From here you can download data, run\n"
     desc += "unit tests or play around adding code in the sandbox section\n\n"
-    epilog = "For help on a specific command, run: 'python itaqa.py {command} -h'\n\n"
-    epilog += "Example usage:\n'python itaqa.py download --region lombardia --min_date 20200101 --filename test'"
+    epilog = "For help on a specific command, run: 'python3 itaqa.py {command} -h'\n\n"
+    epilog += "Example usage:\n'python3 itaqa.py download --region lombardia --min_date 20200101 --filename test'"
     parser = ArgumentParser(description=desc, usage=SUPPRESS, formatter_class=RawTextHelpFormatter, epilog=epilog)
     parser._action_groups.pop()
     parser._action_groups[0].title = "Available modes"
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     sb_parser.set_defaults(mode='sandbox')
 
     parameters = parser.parse_args()
-    logger.info(f"python {' '.join(sys.argv)}")
+    logger.info(f"python3 {' '.join(sys.argv)}")
 
     # Validate region and dates, if they are used
     dt_now = datetime.now()
