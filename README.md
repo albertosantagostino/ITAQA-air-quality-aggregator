@@ -1,7 +1,7 @@
 # Italy Air Quality Aggregator (ITAQA)
 
-![Latest commit](https://img.shields.io/github/last-commit/albertosantagostino/ITAQA-air-quality-aggregator?label=latest%20commit)
-![Open issues](https://img.shields.io/github/issues-raw/albertosantagostino/ITAQA-air-quality-aggregator)
+
+<a href="https://github.com/albertosantagostino/ITAQA-air-quality-aggregator/commits/master" target="\_parent"><img alt="GitHub - License" src="https://img.shields.io/github/last-commit/albertosantagostino/ITAQA-air-quality-aggregator?label=latest%20commit"></a> <a href="https://github.com/albertosantagostino/ITAQA-air-quality-aggregator/issues" target="\_parent"><img alt="ITAQA open issues" src="https://img.shields.io/github/issues-raw/albertosantagostino/ITAQA-air-quality-aggregator"></a>
 
 ![ITAQA](docs/img/banner.png)
 

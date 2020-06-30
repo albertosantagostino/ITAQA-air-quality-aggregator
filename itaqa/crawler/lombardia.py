@@ -116,6 +116,7 @@ def get_AQS_list(dt_range, redownload):
             bar.update(data_reader.line_num)
 
     # Notify the user on parsing outcome
+    # TODO: Print after ordering (set -> list -> sort())
     if missing_sensors:
         logger.warn("Some sensors were not present in metadata dict")
         print([sensor_id for sensor_id in missing_sensors])
