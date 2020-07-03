@@ -14,7 +14,7 @@ If you are in interested in this project and you would like to help developing s
 ### Technical information
 
 **Formatter**
-The formatter used in the project is [**YAPF** (*Yet Another Python Formatter*)](https://github.com/google/yapf). It can be installed easily via pip: `pip3 install yafp`
+The formatter used is [**YAPF** (*Yet Another Python Formatter*)](https://github.com/google/yapf). It can be installed easily via pip: `pip3 install yafp`
 To format all the files in the project, run `yapf -ir .` from the top project folder
 
 **Branch names**
