@@ -96,12 +96,10 @@ class AirQualityStation():
         self.geolocation = [lat, lng, alt]
 
     def update_metadata_datainfo(self):
+        # TODO: Evaluate if it make sense to serialize all these additional info
         data_info = {}
         data_info['total'] = int(self.data.size)
         data_info['shape'] = self.data.shape
-        if data_info['total'] > 0:
-            data_info['min_date'] = self.data['Timestamp'].min().strftime('%Y-%m-%d %H:%M:%S')
-            data_info['max_date'] = self.data['Timestamp'].max().strftime('%Y-%m-%d %H:%M:%S')
         cols = self.data.columns.to_list()
         cols.remove('Timestamp')
         data_info['pollutants'] = cols
