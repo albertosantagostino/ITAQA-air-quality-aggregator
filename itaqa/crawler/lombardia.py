@@ -4,17 +4,19 @@
 Lombardia data downloader and parser
 """
 
+import collections
 import csv
 import logging
 import pandas as pd
 import progressbar
 
 from datetime import datetime
+from pathlib import Path
 
 from itaqa.core.AirQualityStation import AirQualityStation
 from itaqa.core.defs import Pollutant
 from itaqa.geography import Italy
-from itaqa.utils import csv_utils
+from itaqa.utils import csv_utils, AQS_utils
 
 logger = logging.getLogger(__name__)
 
@@ -35,22 +37,30 @@ def get_AQS_list(dt_range, redownload):
             data_url = 'https://www.dati.lombardia.it/api/views/nicp-bhqi/rows.csv'
         elif ref_year == 2019:
             data_url = 'https://www.dati.lombardia.it/api/views/kujm-kavy/rows.csv'
+        elif ref_year == 2018:
+            data_url = 'https://www.dati.lombardia.it/api/views/bgqm-yq56/rows.csv'
         else:
-            raise ValueError('Data table unknown for the specified year')
+            raise ValueError("Data table unknown for the specified year")
     else:
         raise ValueError("Cannot use different years as min and max date for now")
+
+    metadata_file = f'dump/data/lombardia_metadata_{ref_year}.out'
+    data_file = f'dump/data/lombardia_data_{ref_year}.out'
 
     # Download data from ARPA Lombardia
     # TODO: Check if redownload is false but no data is present locally
     if redownload:
         logger.info("Started download from ARPA Lombardia")
-        csv_utils.download_csv(metadata_url, f'dump/lombardia/metadata_{ref_year}.out')
-        csv_utils.download_csv(data_url, f'dump/lombardia/data_{ref_year}.out')
+        csv_utils.download_csv(metadata_url, metadata_file)
+        csv_utils.download_csv(data_url, data_file)
+    else:
+        if Path(metadata_file).exists() and Path(data_file).exists():
+            logger.info("Using stored csv for data")
+        else:
+            raise FileNotFoundError("Data not existing, run agagin with redownload=True")
 
-    # TODO: Check that csv columns are the expected ones (consolidate csv)
-    metadata_reader, metadata_len = csv_utils.read_csv(f'dump/lombardia/metadata_{ref_year}.out')
-    data_reader, data_len = csv_utils.read_csv(f'dump/lombardia/data_{ref_year}.out')
-
+    metadata_reader, metadata_len = csv_utils.read_csv(metadata_file)
+    data_reader, data_len = csv_utils.read_csv(data_file)
     # Create metadata
     header_row = next(metadata_reader, None)
     # Fix rows with wrong title
@@ -96,6 +106,7 @@ def get_AQS_list(dt_range, redownload):
 
     # Fill AQS objects with data, reading the data CSV row by row
     header_row = next(data_reader, None)
+    data_dict = collections.defaultdict(dict)
     missing_sensors = set()
     # TODO: Make the progress bar representative
     print("(The status bar is not representative right now (will be fixed), it should take less than indicated")
@@ -107,50 +118,53 @@ def get_AQS_list(dt_range, redownload):
                 if (row[2] != '-9999'):
                     sensor_id = row[0]
                     if sensor_id in stations_dict:
-                        AQS = stations_dict[sensor_id]
                         dt = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
-                        new_data_df = pd.DataFrame([[dt, row[2]]], columns=AQS.data.columns)
-                        AQS.data = AQS.data.append(new_data_df, ignore_index=True)
+                        data_dict[sensor_id][dt] = row[2]
                     else:
                         missing_sensors.add(sensor_id)
             bar.update(data_reader.line_num)
 
-    # Notify the user on parsing outcome
-    # TODO: Print after ordering (set -> list -> sort())
-    if missing_sensors:
-        logger.warn("Some sensors were not present in metadata dict")
-        print([sensor_id for sensor_id in missing_sensors])
-    if ignored_pollutants:
-        logger.info("Some pollutants were ignored")
-        print([pt for pt in ignored_pollutants])
+    # Create df for all AQS (performance friendly approach: assigned to AQS.data only here)
+    for k, v in data_dict.items():
+        AQS = stations_dict[k]
+        data_df = pd.DataFrame(list(v.items()), columns=AQS.data.columns)
+        AQS.data = AQS.data.append(data_df, ignore_index=True)
 
-    remove_empty_stations(stations_dict)
+    # Notify the user on parsing outcome (ignored items)
+    if missing_sensors:
+        missing_sensors_list = list(missing_sensors)
+        missing_sensors_list.sort()
+        logger.warn("Some sensors were not present in metadata dict")
+        print([sensor_id for sensor_id in missing_sensors_list])
+    if ignored_pollutants:
+        ignored_pollutants_list = list(ignored_pollutants)
+        ignored_pollutants_list.sort()
+        logger.info("Some pollutants were ignored")
+        print([pt for pt in ignored_pollutants_list])
 
     # Convert dict to list
     stations_list = [v for v in stations_dict.values()]
-
+    # Remove stations without data
+    remove_empty_stations(stations_list)
     # Sort by timestamp and reset index of each DataFrame
     for station in stations_list:
         station.data.sort_values(by='Timestamp', inplace=True)
         station.data.reset_index(drop=True, inplace=True)
     # Sort by name
     stations_list.sort()
+    # Merge stations with the same name (indicating the same place)
+    stations_grouped = AQS_utils.group_by_name(stations_list)
+    stations_merged = AQS_utils.merge_by_group(stations_grouped)
 
-    return stations_list
+    return stations_merged
 
 
-def remove_empty_stations(stations_dict, min_entries=1):
-    """
-    Remove all stations that store less than the specified amount of data
-    """
-    targets = []
-    for key in stations_dict:
-        station = stations_dict[key]
-        if station.data.size <= min_entries:
-            targets.append(key)
-    # Delete empty entries
-    for key in targets:
-        del stations_dict[key]
+def remove_empty_stations(stations_list, min_entries=1):
+    new_stations_list = []
+    for station in stations_list:
+        if station.data.size >= min_entries:
+            new_stations_list.append(station)
+    return new_stations_list
 
 
 def get_pollutant_enum(pollutant_name):

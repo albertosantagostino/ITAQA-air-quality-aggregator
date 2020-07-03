@@ -4,13 +4,13 @@
 Tests for AirQualityStation objects
 """
 
-from itaqa.core.AirQualityStation import AirQualityStation
-from itaqa.utils.serialization_utils import load_AQS_from_msgpack, dump_AQS_to_msgpack
-from itaqa.test import utils
-from datetime import datetime, timedelta
 import pandas as pd
-
 import pytest
+
+from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.utils.AQS_utils import check_AQS_equality
+from itaqa.utils.serialization_utils import load_AQS_from_msgpack, dump_AQS_to_msgpack
+from datetime import datetime, timedelta
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def test_serialization(dummy_AQS):
     # Decode msgpack to AQS
     decoded_AQS = AirQualityStation.decode_msgpack(encoded_AQS)
     # Check equality
-    utils.check_AQS_equality(dummy_AQS, decoded_AQS)
+    assert check_AQS_equality([dummy_AQS, decoded_AQS], compare_metadata=False, compare_data=True)
 
 
 def test_serialization_regression_load():

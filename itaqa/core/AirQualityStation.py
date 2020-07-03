@@ -31,47 +31,54 @@ class AirQualityStation():
         data(pandas.DataFrame): Air pollution data of the station
 
     Examples:
-        AirQualityStation('Torino Rebaudengo')
+        AirQualityStation('Mordor')
 
     Raises:
         ValueError: If name is empty
     """
     def __init__(self, name):
-        # Validate station name
         if not name:
             raise ValueError("Station name cannot be empty")
         else:
             self.name = name
 
-        # Geographic information on the location of the station
         self.region = Italy.Region.UNSET
         self.province = Italy.Province.UNSET
         self.comune = None
         self.geolocation = None
-
-        # Metadata
-        # TODO: Make creation time UTC
-        # TODO: Create a function to update metadata information (max date, min date, measured pollutants)
-        self.metadata = {'creation': datetime.now().strftime('%Y%m%dT%H%M%S'), 'uuid': str(uuid.uuid4())}
-
-        # Data
-        self.data = pd.DataFrame()
+        self.metadata = {'uuid': str(uuid.uuid4())}
+        self._data = pd.DataFrame()
 
     def __repr__(self):
-        return f"AirQualityStation('{self.name}','{self.region}','{self.province},'{self.comune}')"
+        return f"AirQualityStation('{self.name}', {self.metadata['uuid']})"
 
     def __str__(self):
-        print_str = f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
+        data_info = self.metadata['data_info']
+        print_str = f"{90*'-'}\n"
+        print_str += f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
         print_str += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
         print_str += f"Geolocation:\t{self.geolocation}\n"
-        print_str += f"Data stored:\t{self.data.shape} (Total: {self.data.size})\n"
-        # TODO: Print also amount of data stored and available pollutants in a compact way
-        #print_str += f"Metadata:\t{self.metadata}"
+        print_str += f"Data stored:\t{data_info['shape']} (Total: {data_info['total']})\n"
+        print_str += f"Pollutants:\t{', '.join(map(str, data_info['pollutants']))}\n"
+        print_str += f"{90*'-'}"
         return print_str
 
     def __lt__(self, other):
         """Comparator operator, sort based on name (for grouping)"""
         return self.name < other.name
+
+    @property
+    def data(self):
+        """Data property"""
+        return self._data
+
+    @data.setter
+    def data(self, value):
+        """Data setter"""
+        # TODO: Check if provided data is a valid pandas df with a Timestamp column
+        self._data = value
+        self.metadata['last_edit'] = datetime.now().strftime('%Y%m%dT%H%M%S')
+        self.update_metadata_datainfo()
 
     def set_address(self, region=None, province=None, comune=None):
         """Set region, province, comune of the station"""
@@ -88,14 +95,25 @@ class AirQualityStation():
         # TODO: Make this a named tuple
         self.geolocation = [lat, lng, alt]
 
+    def update_metadata_datainfo(self):
+        data_info = {}
+        data_info['total'] = int(self.data.size)
+        data_info['shape'] = self.data.shape
+        if data_info['total'] > 0:
+            data_info['min_date'] = self.data['Timestamp'].min().strftime('%Y-%m-%d %H:%M:%S')
+            data_info['max_date'] = self.data['Timestamp'].max().strftime('%Y-%m-%d %H:%M:%S')
+        cols = self.data.columns.to_list()
+        cols.remove('Timestamp')
+        data_info['pollutants'] = cols
+        self.metadata['data_info'] = data_info
+
     @staticmethod
     def encode_msgpack(AQS):
         """Encoder from AQS to msgpack"""
         if isinstance(AQS, AirQualityStation):
             # Convert pd.Timestamp to Unix time (ensure original object is not affected)
-            AQS_data_copy = deepcopy(AQS.data)
-            AQS_data_copy['Timestamp'] = AQS_data_copy['Timestamp'].map(lambda dt: int((pd.Timestamp(dt)).value /
-                                                                                       (10**9)))
+            data_copy = deepcopy(AQS.data)
+            data_copy['Timestamp'] = data_copy['Timestamp'].map(lambda dt: int((pd.Timestamp(dt)).value / (10**9)))
             return {
                 '__AirQualityStation__': True,
                 'm_name': AQS.name,
@@ -104,7 +122,7 @@ class AirQualityStation():
                 'm_comune': AQS.comune,
                 'm_geolocation': AQS.geolocation,
                 'm_metadata': json.dumps(AQS.metadata),
-                'm_data': json.dumps(AQS_data_copy.to_dict())
+                'm_data': json.dumps(data_copy.to_dict())
             }
         else:
             return None
@@ -121,7 +139,8 @@ class AirQualityStation():
             AQS.geolocation = obj['m_geolocation']
             AQS.metadata = json.loads(obj['m_metadata'])
             # Not proud of this, I will think about it later
-            AQS.data = pd.DataFrame.from_dict(json.loads(obj['m_data']))
+            df = pd.DataFrame.from_dict(json.loads(obj['m_data']))
             # Convert Unix time to pd.Timestamp
-            AQS.data['Timestamp'] = AQS.data['Timestamp'].map(lambda unix_time: pd.Timestamp(unix_time * (10**9)))
+            df['Timestamp'] = df['Timestamp'].map(lambda unix_time: pd.Timestamp(unix_time * (10**9)))
+            AQS.data = df
         return AQS

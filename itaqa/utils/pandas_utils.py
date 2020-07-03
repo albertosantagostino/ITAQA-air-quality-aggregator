@@ -13,8 +13,9 @@ def print_full(df):
         print(df)
 
 
-def add_new_data(old_df, new_df):
+def merge_dfs(dfs):
     """Given two pandas DF, concatenate them removing duplicates"""
-    # TODO: Check if both have the same columns and if there are gaps in data
-    dataconcat = pd.concat([old_df, new_df])
+    # TODO: Check if both have the same columns and fields and if there are gaps in data
+    # TODO: Support more than 2 dfs
+    dataconcat = pd.concat([dfs[0], dfs[1]])
     return dataconcat.drop_duplicates().set_index('Timestamp').reset_index()
