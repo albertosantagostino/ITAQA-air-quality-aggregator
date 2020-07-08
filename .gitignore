@@ -1,10 +1,11 @@
 # Cache
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 
-# pyenv
+# pyenv / virtualenv
 .python-version
+.venv/
 
 # Distribution / packaging
 .Python

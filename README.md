@@ -43,8 +43,7 @@ The entrypoint is the script `itaqa.py`. Run it using the `-h` parameter to see 
 itaqa.py [MODE] [parameters] [-h]
 ```
 
-**Available modes**
-
+**Available modes**  
 ```
 download      Download data, serialize and save it in a list of AQS objects
 update        Given an existing AQS objects list, update it with the most recent data
@@ -52,12 +51,12 @@ test          Run all the unit tests
 sandbox       For debugging/testing purposes
 ```
 
-**Example**
+**Example**  
 To check if everything is working fine you can try to run the following command to download data from the Lombardia region for the first month of 2020:
 `python3 itaqa.py download --region lombardia --min_date 20200101 --max_date 20200201 --filename test`
 If everything is working fine you should see the message _"Download completed!"_. Note that at the moment the time indicated in the progress bar is not accurate. Downloading a month of data should take ~3 minutes
 
-**Data analysis**
+**Data analysis**  
 Currently ITAQA is for developers only, meaning there is no easy user interface to plot and visualize data (yet!)
 After you have downloaded some data you can play and explore in the sandbox (loading data with `load_AQS_from_msgpack`)
 

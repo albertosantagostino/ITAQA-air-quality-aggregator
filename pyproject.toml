@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "ITAQA-air-quality-aggregator"
+version = "0.1.0"
+description = "Framework to collect, aggregate and process air pollution data from different sources (Italy regions)"
+authors = ["Alberto Santagostino"]
+license = "GPL-3.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+beautifulsoup4 = "4.9.0"
+lxml = "4.5.0"
+msgpack = "1.0.0"
+pandas = "1.0.3"
+plotly = "4.8.2"
+psutil = "5.7.0"
+pytest = "5.4.3"
+requests = "2.22.0"
+yapf = "0.30.0"
+PyQt5 = "^5.15.0"
+progressbar = "^2.5"
+
+[tool.poetry.dev-dependencies]
+ipdb = "0.13.2"
+pylint = "^2.5.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

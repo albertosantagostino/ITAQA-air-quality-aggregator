@@ -50,16 +50,26 @@ def download_AQS(region, min_date, max_date, filename, redownload):
     logger.info(f"Download completed! Saved in 'dump/{region}/{filename}'")
 
 
-def update_AQS(filepath, overwrite=False):
+def update_AQS(file, overwrite=False):
     """
     Update mode
 
     Given an existing AQS list, update it with the latest data, or given 2 lists, merge them
     """
-    AQS_list = load_AQS_from_msgpack(filepath)
-    # TODO: Given the filepath name determine the region
+    AQS_list = load_AQS_from_msgpack(file)
+    # TODO: Given the filename determine the region
     # Load msgpack, check last entry date, download complementary AQS list and merge them
     # Save the new list (if specified, overwrite the old file)
+
+
+def plot_AQS(file):
+    """
+    Plot mode
+
+    Start interactive visualization mode: select and plot data using plotly
+    """
+    import ipdb
+    ipdb.set_trace()
 
 
 def run_tests():
@@ -71,14 +81,14 @@ def run_tests():
     pytest.main(['-s', '-v', 'itaqa/test'])
 
 
-def sandbox(filepath=None):
+def sandbox(file=None):
     """
     Sandbox for experiments and code testing
 
     If a file is passed, it's loaded in "AQS" for interactive debugging
     """
-    if filepath:
-        AQS = load_AQS_from_msgpack(filepath)
+    if file:
+        AQS = load_AQS_from_msgpack(file)
     else:
         print("To use the sandbox, simply edit/add your code in the sandbox() section of itaqa.py")
         # << Add here code for testing >>
@@ -115,13 +125,19 @@ if __name__ == "__main__":
     dl_optional.add_argument('--redownload', default=False, help="Force the redownload of fresh tables")
 
     # Mode: update
-    # TODO: Given a file, calculate the most recent date and update it merging new downloaded data
     up_parser = subparsers.add_parser('update', help='Update existing AQS collection with new data')
     up_parser.set_defaults(mode='update')
     up_required = up_parser.add_argument_group("required arguments")
     up_optional = up_parser.add_argument_group("optional arguments")
-    up_required.add_argument('--filepath', help="Specify a file containing an AQS list to update")
+    up_required.add_argument('--file', help="Specify a file containing an AQS list to update")
     up_optional.add_argument('--overwrite', default=False, help="Overwrite the original file after the update")
+
+    # Mode: plot
+    pl_parser = subparsers.add_parser('plot', help='Enter interactive mode to plot AQS data')
+    pl_parser.set_defaults(mode='plot')
+    pl_required = pl_parser.add_argument_group("required arguments")
+    pl_optional = pl_parser.add_argument_group("optional arguments")
+    pl_required.add_argument('--file', help="Specify a file containing an AQS list to visualize")
 
     # Mode: test
     ts_parser = subparsers.add_parser('test', help='Run unit tests (pytest)')
@@ -131,7 +147,7 @@ if __name__ == "__main__":
     sb_parser = subparsers.add_parser('sandbox', help='Run sandbox')
     sb_parser.set_defaults(mode='sandbox')
     sb_optional = sb_parser.add_argument_group("optional arguments")
-    sb_optional.add_argument('--filepath', help="Specify a file to load and debug interactively")
+    sb_optional.add_argument('--file', help="Specify a file to load and debug interactively")
 
     parameters = parser.parse_args()
     logger.info(f"python3 {' '.join(sys.argv)}")
@@ -171,8 +187,8 @@ if __name__ == "__main__":
         download_AQS(parameters.region, min_date, max_date, filename, parameters.redownload)
 
     elif parameters.mode == 'update':
-        if Path(parameters.filepath).exists():
-            update_AQS(parameters.filepath, parameters.overwrite)
+        if Path(parameters.file).exists():
+            update_AQS(parameters.file, parameters.overwrite)
         else:
             raise FileNotFoundError("The specified file doesn't exist")
 
@@ -180,9 +196,9 @@ if __name__ == "__main__":
         run_tests()
 
     elif parameters.mode == 'sandbox':
-        if parameters.filepath:
-            if Path(parameters.filepath).exists():
-                sandbox(parameters.filepath)
+        if parameters.file:
+            if Path(parameters.file).exists():
+                sandbox(parameters.file)
             else:
                 raise FileNotFoundError("The specified file doesn't exist")
         else:
