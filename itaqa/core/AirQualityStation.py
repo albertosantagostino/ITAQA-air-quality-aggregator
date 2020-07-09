@@ -12,6 +12,7 @@ from copy import deepcopy
 from datetime import datetime
 
 from itaqa.geography import Italy, converter
+from itaqa.visualization import plotting
 
 
 class AirQualityStation():
@@ -96,6 +97,7 @@ class AirQualityStation():
         self.geolocation = [lat, lng, alt]
 
     def update_metadata_datainfo(self):
+        """Update the information in metadata['datainfo']"""
         # TODO: Evaluate if it make sense to serialize all these additional info
         data_info = {}
         data_info['total'] = int(self.data.size)
@@ -104,6 +106,13 @@ class AirQualityStation():
         cols.remove('Timestamp')
         data_info['pollutants'] = cols
         self.metadata['data_info'] = data_info
+
+    def plot(self, mode='multiple', pollutant=None):
+        """Call visualization functions and create plotly graphs"""
+        if mode == 'single':
+            plotting.AQS_plot(self, pollutant)
+        if mode == 'multiple':
+            plotting.AQS_multiplot(self)
 
     @staticmethod
     def encode_msgpack(AQS):
