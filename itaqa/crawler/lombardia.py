@@ -48,7 +48,6 @@ def get_AQS_list(dt_range, redownload):
     data_file = f'dump/data/lombardia_data_{ref_year}.out'
 
     # Download data from ARPA Lombardia
-    # TODO: Check if redownload is false but no data is present locally
     if redownload:
         logger.info("Started download from ARPA Lombardia")
         csv_utils.download_csv(metadata_url, metadata_file)
@@ -57,7 +56,7 @@ def get_AQS_list(dt_range, redownload):
         if Path(metadata_file).exists() and Path(data_file).exists():
             logger.info("Using stored csv for data")
         else:
-            raise FileNotFoundError("Data not existing, run agagin with redownload=True")
+            raise FileNotFoundError("Data not existing, run again with redownload=True")
 
     metadata_reader, metadata_len = csv_utils.read_csv(metadata_file)
     data_reader, data_len = csv_utils.read_csv(data_file)
@@ -110,19 +109,19 @@ def get_AQS_list(dt_range, redownload):
     missing_sensors = set()
     # TODO: Make the progress bar representative
     print("(The status bar is not representative right now (will be fixed), it should take less than indicated")
-    with progressbar.ProgressBar(max_value=data_len) as bar:
-        for row in data_reader:
-            datetime_object = datetime.strptime(row[1], '%d/%m/%Y %I:%M:%S %p')
-            # Include only data in specified datetime range
-            if (datetime_object >= min_dt) and (datetime_object <= max_dt):
-                if (row[2] != '-9999'):
-                    sensor_id = row[0]
-                    if sensor_id in stations_dict:
-                        dt = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
-                        data_dict[sensor_id][dt] = row[2]
-                    else:
-                        missing_sensors.add(sensor_id)
-            bar.update(data_reader.line_num)
+    pbar = progressbar.ProgressBar(maxval=data_len).start()
+    for row in data_reader:
+        datetime_object = datetime.strptime(row[1], '%d/%m/%Y %I:%M:%S %p')
+        # Include only data in specified datetime range
+        if (datetime_object >= min_dt) and (datetime_object <= max_dt):
+            if (row[2] != '-9999'):
+                sensor_id = row[0]
+                if sensor_id in stations_dict:
+                    dt = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
+                    data_dict[sensor_id][dt] = row[2]
+                else:
+                    missing_sensors.add(sensor_id)
+        pbar.update(data_reader.line_num)
 
     # Create df for all AQS (performance friendly approach: assigned to AQS.data only here)
     for k, v in data_dict.items():
@@ -171,8 +170,10 @@ def get_pollutant_enum(pollutant_name):
     """
     Return the enum representing the pollutant
     """
-    if (pollutant_name == 'Ossidi di Azoto') or (pollutant_name == 'Monossido di Azoto'):
+    if pollutant_name == 'Ossidi di Azoto':
         return Pollutant.NOX
+    elif pollutant_name == 'Monossido di Azoto':
+        return Pollutant.NO
     elif pollutant_name == 'Ozono':
         return Pollutant.O3
     elif pollutant_name == 'Biossido di Azoto':

@@ -36,7 +36,6 @@ class Region(Enum):
 
 class Province(Enum):
     """Enum holding Italy's provinces"""
-    # TODO: Understand if needed for future queries or if not relevant
     # yapf: disable
     AL = auto()
     AN = auto()

@@ -13,6 +13,7 @@ class Pollutant(Enum):
     PM10    = auto()
     PM2_5   = auto()
     NO2     = auto()
+    NO      = auto()
     NOX     = auto()
     O3      = auto()
     BENZENE = auto()
