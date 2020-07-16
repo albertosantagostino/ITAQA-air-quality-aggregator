@@ -32,7 +32,7 @@ class AirQualityStation():
         data(pandas.DataFrame): Air pollution data of the station
 
     Examples:
-        AirQualityStation('Mordor')
+        AirQualityStation('Mount Doom')
 
     Raises:
         ValueError: If name is empty
@@ -51,7 +51,7 @@ class AirQualityStation():
         self._data = pd.DataFrame()
 
     def __repr__(self):
-        return f"AirQualityStation('{self.name}', {self.metadata['uuid']})"
+        return f"AirQualityStation('{self.name}')"
 
     def __str__(self):
         data_info = self.metadata['data_info']
@@ -80,6 +80,10 @@ class AirQualityStation():
         self._data = value
         self.metadata['last_edit'] = datetime.now().strftime('%Y%m%dT%H%M%S')
         self.update_metadata_datainfo()
+
+    @property
+    def uuid(self):
+        return self.metadata['uuid']
 
     def set_address(self, region=None, province=None, comune=None):
         """Set region, province, comune of the station"""

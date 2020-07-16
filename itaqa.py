@@ -26,6 +26,7 @@ from itaqa.crawler.defs import REGION_CRAWLERS
 from itaqa.utils.AQS_utils import group_by_name, merge_by_group, merge_AQS_data
 from itaqa.utils.pandas_utils import print_full
 from itaqa.utils.serialization_utils import dump_AQS_to_msgpack, load_AQS_from_msgpack
+from itaqa.gui.AQS_viewer import start_viewer
 
 # Setup logging
 log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', 'main.log')
@@ -132,12 +133,11 @@ if __name__ == "__main__":
     up_required.add_argument('--file', help="Specify a file containing an AQS list to update")
     up_optional.add_argument('--overwrite', default=False, help="Overwrite the original file after the update")
 
-    # Mode: plot
-    pl_parser = subparsers.add_parser('plot', help='Enter interactive mode to plot AQS data')
-    pl_parser.set_defaults(mode='plot')
-    pl_required = pl_parser.add_argument_group("required arguments")
+    # Mode: view
+    pl_parser = subparsers.add_parser('view', help='Enter interactive GUI mode to view and plot AQS data')
+    pl_parser.set_defaults(mode='view')
     pl_optional = pl_parser.add_argument_group("optional arguments")
-    pl_required.add_argument('--file', help="Specify a file containing an AQS list to visualize")
+    pl_optional.add_argument('--file', help="Specify a file containing an AQS list to visualize")
 
     # Mode: test
     ts_parser = subparsers.add_parser('test', help='Run unit tests (pytest)')
@@ -191,6 +191,10 @@ if __name__ == "__main__":
             update_AQS(parameters.file, parameters.overwrite)
         else:
             raise FileNotFoundError("The specified file doesn't exist")
+
+    elif parameters.mode == 'view':
+        # TODO: Support file parameters
+        start_viewer()
 
     elif parameters.mode == 'test':
         run_tests()
