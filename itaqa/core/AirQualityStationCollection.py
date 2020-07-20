@@ -12,7 +12,6 @@ from rich.console import Console
 from rich.table import Table
 
 from itaqa.core.AirQualityStation import AirQualityStation
-from itaqa.utils.serialization_utils import load_AQS_from_msgpack
 
 
 class AirQualityStationCollection():
@@ -58,6 +57,7 @@ class AirQualityStationCollection():
 
     @AQS_dict.setter
     def set_AQS_dict(self, AQS_dict):
+        """Update the AQS collection"""
         self._AQS_dict.update(AQS_dict)
 
     @property

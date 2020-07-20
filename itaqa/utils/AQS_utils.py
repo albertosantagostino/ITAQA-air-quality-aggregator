@@ -46,7 +46,6 @@ def merge_by_group(AQS_group):
             pollutant = cols[0]
             new_AQS.metadata['premerge_history'][pollutant] = {}
             new_AQS.metadata['premerge_history'][pollutant]['name'] = station.name
-            # TODO: Move geolocation in more accessible place?
             new_AQS.metadata['premerge_history'][pollutant]['geolocation'] = station.geolocation
         # Take first frame and merge all the others
         merged_df = frames.pop()
@@ -59,7 +58,11 @@ def merge_by_group(AQS_group):
 
 
 def merge_AQS_data(AQS_list):
-    """Merge the data and return a new AQS. Used to add most recent data (with the same columns)"""
+    """
+    Merge the data and return a new AQS
+
+    To use with multiple AQS objects representing the same location but at different times (different records)
+    """
     equality = check_AQS_equality(AQS_list, compare_data=False, compare_metadata=False)
     if not equality:
         logging.warn("Some AQS in the list are not representing the same sensor/station, skipping data merge")

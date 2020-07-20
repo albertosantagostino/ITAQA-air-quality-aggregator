@@ -21,9 +21,9 @@ from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 from datetime import datetime
 from pathlib import Path
 
-from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
 from itaqa.crawler.defs import REGION_CRAWLERS
-from itaqa.utils.AQS_utils import group_by_name, merge_by_group, merge_AQS_data
+from itaqa.utils.AQS_utils import group_by_name, merge_by_group
 from itaqa.utils.pandas_utils import print_full
 from itaqa.utils.serialization_utils import dump_AQS_to_msgpack, load_AQS_from_msgpack
 from itaqa.gui.AQS_viewer import start_viewer
@@ -45,13 +45,13 @@ def download_AQS(region, min_date, max_date, filename, redownload):
 
     Given a region and a time range, download the AQS list and store it locally
     """
-    get_AQS_list = REGION_CRAWLERS[region]
-    AQS_list = get_AQS_list(dt_range=[min_date, max_date], redownload=redownload)
-    dump_AQS_to_msgpack(AQS_list, f'dump/{region}/{filename}')
+    get_AQSC = REGION_CRAWLERS[region]
+    AQSC = get_AQSC(dt_range=[min_date, max_date], redownload=redownload)
+    AQSC.save(f'dump/{region}/{filename}')
     logger.info(f"Download completed! Saved in 'dump/{region}/{filename}'")
 
 
-def update_AQS(file, overwrite=False):
+def update_AQS(file_path, overwrite=False):
     """
     Update mode
 
@@ -63,7 +63,7 @@ def update_AQS(file, overwrite=False):
     # Save the new list (if specified, overwrite the old file)
 
 
-def plot_AQS(file):
+def plot_AQS(file_path):
     """
     Plot mode
 
@@ -82,17 +82,18 @@ def run_tests():
     pytest.main(['-s', '-v', 'itaqa/test'])
 
 
-def sandbox(file=None):
+def sandbox(file_path=None):
     """
     Sandbox for experiments and code testing
 
-    If a file is passed, it's loaded in "AQS" for interactive debugging
+    If a file is passed, it's loaded in "AQSC" for interactive debugging
     """
-    if file:
-        AQS = load_AQS_from_msgpack(file)
+    if file_path:
+        AQSC = AirQualityStationCollection(name='Sandbox', file_path=file_path)
     else:
         print("To use the sandbox, simply edit/add your code in the sandbox() section of itaqa.py")
         # << Add here code for testing >>
+    AQSC.info()
     ipdb.set_trace()
 
 
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers()
 
     # Mode: download
-    dl_parser = subparsers.add_parser('download', help="Download new data, save the AQS list in dump/REGION/")
+    dl_parser = subparsers.add_parser('download', help="Download new data, save the AQSC in dump/REGION/")
     dl_parser.set_defaults(mode='download')
     dl_parser._action_groups.pop()
     dl_required = dl_parser.add_argument_group("required arguments")
@@ -130,14 +131,14 @@ if __name__ == "__main__":
     up_parser.set_defaults(mode='update')
     up_required = up_parser.add_argument_group("required arguments")
     up_optional = up_parser.add_argument_group("optional arguments")
-    up_required.add_argument('--file', help="Specify a file containing an AQS list to update")
+    up_required.add_argument('--file', help="Specify a file containing an AQSC to update")
     up_optional.add_argument('--overwrite', default=False, help="Overwrite the original file after the update")
 
     # Mode: view
     pl_parser = subparsers.add_parser('view', help='Enter interactive GUI mode to view and plot AQS data')
     pl_parser.set_defaults(mode='view')
     pl_optional = pl_parser.add_argument_group("optional arguments")
-    pl_optional.add_argument('--file', help="Specify a file containing an AQS list to visualize")
+    pl_optional.add_argument('--file', help="Specify a file containing an AQSC to visualize")
 
     # Mode: test
     ts_parser = subparsers.add_parser('test', help='Run unit tests (pytest)')
@@ -171,7 +172,7 @@ if __name__ == "__main__":
                 sys.exit(1)
         else:
             max_date = datetime(year=dt_now.year, month=dt_now.month, day=dt_now.day)
-        filename = 'AQS_list'
+        filename = 'AQSC'
         if parameters.filename:
             filename = parameters.filename.replace('.msgpack', '')
         if not parameters.redownload:
@@ -188,7 +189,7 @@ if __name__ == "__main__":
 
     elif parameters.mode == 'update':
         if Path(parameters.file).exists():
-            update_AQS(parameters.file, parameters.overwrite)
+            update_AQS(file_path=parameters.file, overwrite=parameters.overwrite)
         else:
             raise FileNotFoundError("The specified file doesn't exist")
 
@@ -202,7 +203,7 @@ if __name__ == "__main__":
     elif parameters.mode == 'sandbox':
         if parameters.file:
             if Path(parameters.file).exists():
-                sandbox(parameters.file)
+                sandbox(file_path=parameters.file)
             else:
                 raise FileNotFoundError("The specified file doesn't exist")
         else:

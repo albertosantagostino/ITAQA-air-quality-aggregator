@@ -58,7 +58,6 @@ class AirQualityStation():
         return print_str
 
     def __lt__(self, other):
-        """Comparator operator, sort based on name (for grouping)"""
         return self.name < other.name
 
     @property
