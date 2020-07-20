@@ -18,6 +18,7 @@ requests = "2.22.0"
 yapf = "0.30.0"
 PyQt5 = "^5.15.0"
 progressbar = "^2.5"
+rich = "^3.3.2"
 
 [tool.poetry.dev-dependencies]
 ipdb = "0.13.2"
