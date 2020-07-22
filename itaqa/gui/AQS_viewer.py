@@ -4,14 +4,34 @@
 AQS collection viewer
 """
 
+import json
 import logging
 import sys
 
+from datetime import datetime
 from pathlib import Path
-from PyQt5.QtWidgets import QPushButton, QApplication, QDialog, QGridLayout, QLabel, QFileDialog, QListWidget, QFrame, QTextBrowser
-from PyQt5.QtGui import QFont
 
-from itaqa.utils.serialization_utils import load_AQS_from_msgpack
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QBrush, QColor, QFont, QGuiApplication, QKeySequence
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QApplication,
+    QDialog,
+    QFileDialog,
+    QGridLayout,
+    QHeaderView,
+    QLabel,
+    QListWidget,
+    QPushButton,
+    QShortcut,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextBrowser,
+    QVBoxLayout,
+)
+
+from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
+from itaqa.core.defs import Pollutant
 
 logger = logging.getLogger(__name__)
 
@@ -20,90 +40,176 @@ class Dialog(QDialog):
     def __init__(self, parent=None):
         super(Dialog, self).__init__()
 
+        ## Text widgets
         # AQS list selector and list
-        self.browse_AQS_folder = QPushButton("Select folder...")
-        self.AQS_lists = QListWidget()
-        self.current_folder_dict = {}
-
+        self.files_list = QListWidget()
+        self.files_list.setFixedHeight(140)
         # AQS list information
-        self.text_info = QTextBrowser()
-
+        self.AQSC_info = QTextBrowser()
+        self.AQSC_info.setMinimumHeight(80)
         # Stored AQS
         self.AQS_stored = QListWidget()
+        self.AQS_stored.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.AQS_stored.setMinimumHeight(200)
         self.AQS_info = QTextBrowser()
+        # AQS pollutants table
+        self.table_pl = QTableWidget()
+        self.table_pl.setSelectionMode(QAbstractItemView.NoSelection)
+        self.table_pl.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        fnt = QFont()
+        fnt.setPointSize(8)
+        self.table_pl.setFont(fnt)
+        self.table_pl.setRowCount(len(Pollutant) - 1)
+        self.table_pl.setColumnCount(2)
+        self.table_pl.setVerticalHeaderLabels([pl.name for pl in Pollutant if pl.name != 'UNSET'])
+        self.table_pl.setHorizontalHeaderLabels(['Present', 'Count'])
+        self.table_pl.setMinimumHeight(190)
+        self.table_pl.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_pl.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-        # Layout
+        ## Buttons
+        button_browse_folder = QPushButton("Browse...")
+        button_browse_folder.setMinimumHeight(60)
+        self.button_AQS_plot = QPushButton("Plot/Visualize\n(<spacebar>)")
+        self.button_AQS_plot.setDisabled(True)
+        shortcut_AQS_plot = QShortcut(QKeySequence(Qt.Key_Space), self)
+        self.button_AQS_plot.setMinimumHeight(60)
+
+        ## Layouts
+        # Buttons
+        buttons_layout = QVBoxLayout()
+        buttons_layout.setAlignment(Qt.AlignTop)
+        buttons_layout.addWidget(self.button_AQS_plot)
+        buttons_layout.addStretch()
+
+        # Main grid
         grid = QGridLayout()
-        grid.addWidget(QLabel("Serialized AQS lists:"), 0, 0)
-        grid.addWidget(self.browse_AQS_folder, 0, 1)
-        grid.addWidget(self.AQS_lists, 2, 0, 1, 2)
-        grid.addWidget(QLabel("List information:"), 3, 0)
-        grid.addWidget(self.text_info, 4, 0, 1, 2)
-        grid.addWidget(QLabel("Stored AQS:"), 5, 0)
-        grid.addWidget(self.AQS_stored, 6, 0)
-        grid.addWidget(self.AQS_info, 6, 1)
+        grid.addWidget(QLabel("Serialized AirQualityStationCollection (AQSC) objects:"), 0, 0)
+        grid.addWidget(button_browse_folder, 2, 2)
+        grid.addWidget(self.files_list, 2, 0, 1, 2)
+        grid.addWidget(QLabel("AQSC information:"), 3, 0)
+        grid.addWidget(self.AQSC_info, 4, 0, 1, 2)
+        grid.addWidget(QLabel("AQS stored:"), 5, 0)
+        grid.addWidget(self.AQS_stored, 6, 0, 3, 1)
+        grid.addWidget(self.AQS_info, 6, 1, 1, 1)
+        grid.addWidget(self.table_pl, 7, 1, 2, 1)
+        grid.addLayout(buttons_layout, 6, 2, 3, 1)
 
-        # Window properties
+        ## Window properties
         self.setLayout(grid)
-        self.setWindowTitle("ITAQA Visualizer")
-        self.setGeometry(500, 350, 800, 400)
-        self.setMinimumSize(700, 400)
+        self.setWindowTitle("ITAQA AirQualityStationCollection Explorer")
+        self.setGeometry(0, 0, 800, 700)
+        self.setMinimumSize(800, 700)
+        # Set position depending on the screen geometry
+        geometry = QGuiApplication.screens()[0].geometry()
+        self.move((geometry.width() - self.width()) / 2, (geometry.height() - self.height()) / 2)
 
-        # Add button signals and events
-        self.browse_AQS_folder.clicked.connect(self.browse_folder)
-        self.AQS_lists.itemClicked.connect(self.browse_msgpack_list)
-        self.AQS_stored.itemClicked.connect(self.show_AQS)
+        ## Signals and events
+        self.files_list.itemClicked.connect(self.browse_msgpack_list)
+        # TODO: Multiselection support and use itemSelectionChanged always (to support keyboard scroll)
+        # self.files_list.itemSelectionChanged.connect(...)
+        self.AQS_stored.itemClicked.connect(self.AQS_show_info)
+        button_browse_folder.clicked.connect(self.browse_folder)
+        self.button_AQS_plot.clicked.connect(self.AQS_plot)
+        shortcut_AQS_plot.activated.connect(self.AQS_plot)
 
         # Global data containers
         self.dir_path = ''
-        self.loaded_AQS_list = []
-        self.sel_AQS = None
+        self.AQSC_loaded = None
+        self.AQS_selected = None
 
     def browse_folder(self):
-        self.dir_path = QFileDialog.getExistingDirectory(
-            self, caption="Open AQS lists directory", directory='/home/alberto/code/ITAQA-air-quality-aggregator/dump')
+        root_path = Path.cwd()
+        if root_path.joinpath('dump').exists():
+            root_path = root_path.joinpath('dump')
+        self.dir_path = QFileDialog.getExistingDirectory(self,
+                                                         caption="Select AQSC directory",
+                                                         directory=str(root_path))
         files = sorted(Path(self.dir_path).iterdir())
         for ff in files:
             if ff.suffix == '.msgpack':
-                self.AQS_lists.addItem(ff.name)
+                self.files_list.addItem(ff.name)
 
     def browse_msgpack_list(self, item):
-        selected_msgpack = Path(self.dir_path + '/' + item.text())
-        try:
-            self.loaded_AQS_list = load_AQS_from_msgpack(selected_msgpack)
-        except ValueError:
-            logger.error("Cannot load the selected AQS msgpack")
-            self.clear_selection()
-        else:
-            self.text_info.setMarkdown(
-                f"**{item.text()}**\n\nStored AQS: **{len(self.loaded_AQS_list)}**\n\Date range: TODO")
-            self.AQS_stored.clear()
+        file_selected = Path(self.dir_path + '/' + item.text())
+        self.AQSC_loaded = AirQualityStationCollection(name='Loaded_AQSC', file_path=file_selected)
+        filename_info = parse_filename(item.text())
 
-            for AQS in self.loaded_AQS_list:
-                self.AQS_stored.addItem(AQS.name)
+        self.AQSC_info.setMarkdown(f"Stored AQS: **{len(self.AQSC_loaded.AQS_list)}**\n\n" +
+                                   f"Date range: from **{filename_info['min_dt']}** to "
+                                   f"**{filename_info['max_dt']}**")
+        self.AQS_stored.clear()
+        for AQS in self.AQSC_loaded.AQS_list:
+            self.AQS_stored.addItem(AQS.name)
 
-    def show_AQS(self, item):
-        # TODO: Refactor when AQS_list is encapsulated
-        for AQS in self.loaded_AQS_list:
-            if AQS.name == item.text():
-                self.sel_AQS = AQS
-        tot_data = self.sel_AQS.metadata['data_info']['total']
-        pollutants = ', '.join(map(str, self.sel_AQS.metadata['data_info']['pollutants']))
-        self.AQS_info.setMarkdown(f"**{self.sel_AQS.name}**\n\nData stored: **{tot_data}**\n\nPollutants: {pollutants}")
+    def AQS_show_info(self, item):
+        self.AQS_selected = self.AQSC_loaded.search(item.text())
+        if isinstance(self.AQS_selected, list):
+            raise ValueError("More than one station with the same name")
+        tot_data = self.AQS_selected.metadata['data_info']['shape'][0]
+        pollutants = '\n- '.join(map(str, self.AQS_selected.metadata['data_info']['pollutants']))
+        self.AQS_info.setMarkdown(f"**{self.AQS_selected.name}**\n\nEntries: **{tot_data}**")
+
+        self.table_pl.clearContents()
+
+        red_cell, green_cell = get_table_cells()
+
+        fnt = QFont()
+        fnt.setBold(True)
+
+        pl_list = [pl.name for pl in Pollutant if pl.name != 'UNSET']
+        for i, pl in enumerate(pl_list):
+            header_pl = self.table_pl.model().headerData(i, Qt.Vertical)
+            if header_pl in self.AQS_selected.metadata['data_info']['pollutants']:
+                self.table_pl.setItem(i, 0, QTableWidgetItem(green_cell))
+                count_cell = QTableWidgetItem(str(self.AQS_selected.data[pl].count()))
+                count_cell.setFont(fnt)
+                self.table_pl.setItem(i, 1, count_cell)
+            else:
+                self.table_pl.setItem(i, 0, QTableWidgetItem(red_cell))
+
+        self.button_AQS_plot.setEnabled(True)
+
+    def AQS_plot(self):
+        self.AQS_selected.plot()
 
     def clear_selection(self):
-        self.text_info.clear()
+        self.AQSC_info.clear()
         self.AQS_stored.clear()
         self.AQS_info.clear()
 
 
-def start_viewer():
+def get_table_cells():
+    red_cell = QTableWidgetItem()
+    red_cell_brush = QBrush()
+    red_cell_brush.setStyle(Qt.BrushStyle(Qt.DiagCrossPattern))
+    red_cell_brush.setColor(QColor(255, 0, 0))
+    red_cell.setBackground(red_cell_brush)
+    green_cell = QTableWidgetItem()
+    green_cell_brush = QBrush()
+    green_cell_brush.setStyle(Qt.BrushStyle(Qt.Dense4Pattern))
+    green_cell_brush.setColor(QColor(0, 255, 0))
+    green_cell.setBackground(green_cell_brush)
+    return red_cell, green_cell
+
+
+def parse_filename(filename):
+    tok = filename.split('_')
+    filename_info = {}
+    filename_info['creation'] = datetime.strptime(tok[0], '%Y%m%d%H%M%S')
+    filename_info['min_dt'] = datetime.strptime(tok[1], 'm%y%m%d').strftime('%Y-%m-%d')
+    filename_info['max_dt'] = datetime.strptime(tok[2], 'M%y%m%d').strftime('%Y-%m-%d')
+    filename_info['region'] = tok[3]
+    return filename_info
+
+
+def start_GUI():
     # Create the Qt Application
     app = QApplication(sys.argv)
-    
-    # Create and show the form
-    form = Dialog(app)
-    form.show()
+
+    # Create and show the main Dialog
+    dialog = Dialog(app)
+    dialog.show()
 
     # Run the main Qt loop
     sys.exit(app.exec_())

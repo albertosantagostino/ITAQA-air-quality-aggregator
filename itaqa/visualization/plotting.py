@@ -58,7 +58,7 @@ def get_data_lines(AQS):
                                      y=AQS.data[f'{pollutant}'],
                                      name=f'{pollutant}',
                                      mode='lines+markers',
-                                     marker=dict(color='Black', size=2),
+                                     marker=dict(color='Black', size=3),
                                      line=dict(color=get_pollutant_color(pollutant), width=2))
             data_lines.append(data_line)
     return data_lines

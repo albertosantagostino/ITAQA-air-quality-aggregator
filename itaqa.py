@@ -10,8 +10,8 @@ Entrypoint of the project, using this script:
 - Run unit tests
 """
 
-import logging
 import ipdb
+import logging
 import os
 import pandas as pd
 import pytest
@@ -23,10 +23,8 @@ from pathlib import Path
 
 from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
 from itaqa.crawler.defs import REGION_CRAWLERS
-from itaqa.utils.AQS_utils import group_by_name, merge_by_group
 from itaqa.utils.pandas_utils import print_full
-from itaqa.utils.serialization_utils import dump_AQS_to_msgpack, load_AQS_from_msgpack
-from itaqa.gui.AQS_viewer import start_viewer
+from itaqa.gui.AQS_viewer import start_GUI
 
 # Setup logging
 log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', 'main.log')
@@ -57,7 +55,7 @@ def update_AQS(file_path, overwrite=False):
 
     Given an existing AQS list, update it with the latest data, or given 2 lists, merge them
     """
-    AQS_list = load_AQS_from_msgpack(file)
+    print("TODO")
     # TODO: Given the filename determine the region
     # Load msgpack, check last entry date, download complementary AQS list and merge them
     # Save the new list (if specified, overwrite the old file)
@@ -176,6 +174,7 @@ if __name__ == "__main__":
         if parameters.filename:
             filename = parameters.filename.replace('.msgpack', '')
         if not parameters.redownload:
+            # TODO: Fix undesired behavior (if --redownload=False, still treated as True)
             logger.info("(No redownload flag set, will use latest downloaded data, may be outdated)")
         # yapf: disable
         filename = ''.join([
@@ -194,8 +193,8 @@ if __name__ == "__main__":
             raise FileNotFoundError("The specified file doesn't exist")
 
     elif parameters.mode == 'view':
-        # TODO: Support file parameters
-        start_viewer()
+        # TODO: Support file as parameter
+        start_GUI()
 
     elif parameters.mode == 'test':
         run_tests()
