@@ -32,9 +32,9 @@ def test_serialization(dummy_AQS):
     [Fail] If msgpack encoding/decoding is broken
     """
     # Encode AQS to msgpack
-    encoded_AQS = AirQualityStation.encode_msgpack(dummy_AQS)
+    encoded_AQS = AirQualityStation.encode_AQS_msgpack(dummy_AQS)
     # Decode msgpack to AQS
-    decoded_AQS = AirQualityStation.decode_msgpack(encoded_AQS)
+    decoded_AQS = AirQualityStation.decode_AQS_msgpack(encoded_AQS)
     # Check equality
     assert check_AQS_equality([dummy_AQS, decoded_AQS], compare_metadata=False, compare_data=True)
 

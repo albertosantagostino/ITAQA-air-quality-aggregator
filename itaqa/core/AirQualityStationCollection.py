@@ -4,6 +4,7 @@
 Class AirQualityStationCollection
 """
 
+import json
 import msgpack
 import warnings
 
@@ -12,6 +13,7 @@ from rich.console import Console
 from rich.table import Table
 
 from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.utils.AQSC_utils import prepare_aqscinfo
 
 
 class AirQualityStationCollection():
@@ -94,27 +96,23 @@ class AirQualityStationCollection():
             except KeyError:
                 warnings.warn("No AQS with the specified uuid, ignoring command")
 
-    def search(self, name):
+    def search(self, search_term, mode='name'):
         """Get the AQS that match (even partially, not case sensitive) the specified name"""
-        res = [AQS for AQS in self.AQS_list if name.lower() in AQS.name.lower()]
-        if len(res) == 1:
-            return res[0]
-        return res
+        if mode == 'name':
+            res = [AQS for AQS in self.AQS_list if search_term.lower() in AQS.name.lower()]
+            if len(res) == 1:
+                return res[0]
+            return res
 
-    def query(self, query):
-        """
-        Search using a query-like expression, using eval (not so nice, yup), return a dict of matching AQS
-
-        Example: AQSC.expression_search('AQS.data.size < 1000')
-        """
-        return {AQS.uuid: AQS for AQS in self.AQS_list if eval(query)}
-
-    def save(self, file_path):
-        """Serialize and save the AQS collection (as a list of AQS) to a file"""
+    def save(self, file_path, generate_aqscinfo=False):
+        """Serialize and save the AQS collection to a file, together with the info json"""
         with open(file_path, 'wb') as fp:
             packed = msgpack.packb(self.AQS_list, default=AirQualityStation.encode_AQS_msgpack)
             fp.write(packed)
-        # TODO: Write json/yaml info file
+        if generate_aqscinfo:
+            aqscinfo = prepare_aqscinfo(self)
+            with open(file_path.replace('.msgpack', '.json'), 'w') as fp:
+                json.dump(aqscinfo, fp)
 
     def load(self, file_path):
         """Load a serialized AQS collection"""
