@@ -14,9 +14,10 @@ from datetime import datetime
 from pathlib import Path
 
 from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
 from itaqa.core.defs import Pollutant
 from itaqa.geography import Italy
-from itaqa.utils import csv_utils, AQS_utils
+from itaqa.utils import AQS_utils, AQSC_utils, csv_utils, pandas_utils
 
 logger = logging.getLogger(__name__)
 
@@ -141,29 +142,23 @@ def get_AQS_list(dt_range, redownload):
         logger.info("Some pollutants were ignored")
         print([pt for pt in ignored_pollutants_list])
 
-    # Convert dict to list
-    stations_list = [v for v in stations_dict.values()]
+    # Create AQSC from stations_dict
+    AQSC = AirQualityStationCollection(name='Lombardia', AQS=[v for v in stations_dict.values()])
     # Remove stations without data
-    remove_empty_stations(stations_list)
-    # Sort by timestamp and reset index of each DataFrame
-    for station in stations_list:
-        station.data.sort_values(by='Timestamp', inplace=True)
-        station.data.reset_index(drop=True, inplace=True)
-    # Sort by name
-    stations_list.sort()
+    AQSC_utils.remove_empty_stations(AQSC)
+
     # Merge stations with the same name (indicating the same place)
-    stations_grouped = AQS_utils.group_by_name(stations_list)
-    stations_merged = AQS_utils.merge_by_group(stations_grouped)
+    stations_grouped = AQSC_utils.group_by_name(AQSC)
+    stations_merged = AQSC_utils.merge_by_group(AQSC, stations_grouped)
 
-    return stations_merged
+    for AQS in AQSC:
+        # Sort by timestamp and reset index of each DataFrame
+        AQS.data.sort_values(by='Timestamp', inplace=True)
+        AQS.data.reset_index(drop=True, inplace=True)
+        # Reorder columns: alphabetical order
+        AQS.data = pandas_utils.reorder_columns(AQS.data)
 
-
-def remove_empty_stations(stations_list, min_entries=1):
-    new_stations_list = []
-    for station in stations_list:
-        if station.data.size >= min_entries:
-            new_stations_list.append(station)
-    return new_stations_list
+    return AQSC
 
 
 def get_pollutant_enum(pollutant_name):

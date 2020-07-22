@@ -33,16 +33,9 @@ class AirQualityStation():
 
     Examples:
         AirQualityStation('Mount Doom')
-
-    Raises:
-        ValueError: If name is empty
     """
     def __init__(self, name):
-        if not name:
-            raise ValueError("Station name cannot be empty")
-        else:
-            self.name = name
-
+        self.name = name
         self.region = Italy.Region.UNSET
         self.province = Italy.Province.UNSET
         self.comune = None
@@ -65,7 +58,6 @@ class AirQualityStation():
         return print_str
 
     def __lt__(self, other):
-        """Comparator operator, sort based on name (for grouping)"""
         return self.name < other.name
 
     @property
@@ -79,6 +71,7 @@ class AirQualityStation():
         # TODO: Check if provided data is a valid pandas df with a Timestamp column
         self._data = value
         self.metadata['last_edit'] = datetime.now().strftime('%Y%m%dT%H%M%S')
+        # TODO: Check metadata performances
         self.update_metadata_datainfo()
 
     @property
@@ -119,7 +112,7 @@ class AirQualityStation():
             plotting.AQS_multiplot(self)
 
     @staticmethod
-    def encode_msgpack(AQS):
+    def encode_AQS_msgpack(AQS):
         """Encoder from AQS to msgpack"""
         if isinstance(AQS, AirQualityStation):
             # Convert pd.Timestamp to Unix time (ensure original object is not affected)
@@ -139,7 +132,7 @@ class AirQualityStation():
             return None
 
     @staticmethod
-    def decode_msgpack(obj):
+    def decode_AQS_msgpack(obj):
         """Decoder from msgpack to AQS"""
         AQS = None
         if '__AirQualityStation__' in obj:
