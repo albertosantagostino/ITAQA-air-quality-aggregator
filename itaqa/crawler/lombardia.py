@@ -5,7 +5,6 @@ Lombardia data downloader and parser
 """
 
 import collections
-import csv
 import logging
 import pandas as pd
 import progressbar
@@ -17,7 +16,7 @@ from itaqa.core.AirQualityStation import AirQualityStation
 from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
 from itaqa.core.defs import Pollutant
 from itaqa.geography import Italy
-from itaqa.utils import AQS_utils, AQSC_utils, csv_utils, pandas_utils
+from itaqa.utils import AQSC_utils, csv_utils, pandas_utils
 
 logger = logging.getLogger(__name__)
 
@@ -61,11 +60,11 @@ def get_AQS_list(dt_range, redownload):
 
     metadata_reader, metadata_len = csv_utils.read_csv(metadata_file)
     data_reader, data_len = csv_utils.read_csv(data_file)
-    # Create metadata
     header_row = next(metadata_reader, None)
     # Fix rows with wrong title
     header_row[16] = 'Limiti amministrativi 2014'
     header_row[17] = 'Limiti amministrativi 2015'
+    # Create metadata
     metadata_dict = {}
     for row in metadata_reader:
         tuplelist = []
@@ -76,16 +75,18 @@ def get_AQS_list(dt_range, redownload):
                 row[i] = row[i].replace('Â', '')
             tuplelist.append((header_row[i], row[i]))
         sensor_id = int(row[0])
-        metadata_dict[sensor_id] = {key: value for (key, value) in tuplelist}
+        metadata_dict[sensor_id] = {kk: vv for (kk, vv) in tuplelist}
     metadata_pd = pd.DataFrame(metadata_dict)
 
     # Create an AirQualityStation for each station in metadata
     stations_dict = {}
     ignored_pollutants = set()
-    for key in metadata_pd:
-        station = metadata_pd[key]
-        # Check if the station is still active. If not, ignore it (TODO: Refactor/remove)
-        if not station.datastop:
+    for kk in metadata_pd:
+        station = metadata_pd[kk]
+        # Check if the station is still active (if not, check if there is recorded data after min_dt)
+        if (station.storico == 'N'
+                and not station.datastop) or (station.storico == 'S' and station.datastop and
+                                              datetime.strptime(station.datastop, "%Y-%m-%dT%H:%M:%S.000") > min_dt):
             station_name = station['nomestazione']
             AQS = AirQualityStation(station_name)
             AQS.set_address(region=Italy.Region.LOMBARDIA,
@@ -100,16 +101,13 @@ def get_AQS_list(dt_range, redownload):
                     AQS.data = data_pd
                 else:
                     logger.warning("Dataframe should be empty at this step")
-                stations_dict[str(key)] = AQS
+                stations_dict[str(kk)] = AQS
             else:
                 ignored_pollutants.add(station['nometiposensore'])
-
     # Fill AQS objects with data, reading the data CSV row by row
     header_row = next(data_reader, None)
     data_dict = collections.defaultdict(dict)
     missing_sensors = set()
-    # TODO: Make the progress bar representative
-    print("(The status bar is not representative right now (will be fixed), it should take less than indicated")
     pbar = progressbar.ProgressBar(maxval=data_len).start()
     for row in data_reader:
         datetime_object = datetime.strptime(row[1], '%d/%m/%Y %I:%M:%S %p')
@@ -146,18 +144,16 @@ def get_AQS_list(dt_range, redownload):
     AQSC = AirQualityStationCollection(name='Lombardia', AQS=[v for v in stations_dict.values()])
     # Remove stations without data
     AQSC_utils.remove_empty_stations(AQSC)
-
     # Merge stations with the same name (indicating the same place)
     stations_grouped = AQSC_utils.group_by_name(AQSC)
     stations_merged = AQSC_utils.merge_by_group(AQSC, stations_grouped)
-
+    # Perform single operations on AQS data
     for AQS in AQSC:
         # Sort by timestamp and reset index of each DataFrame
         AQS.data.sort_values(by='Timestamp', inplace=True)
         AQS.data.reset_index(drop=True, inplace=True)
         # Reorder columns: alphabetical order
         AQS.data = pandas_utils.reorder_columns(AQS.data)
-
     return AQSC
 
 

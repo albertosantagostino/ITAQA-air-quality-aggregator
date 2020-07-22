@@ -11,7 +11,7 @@ import uuid
 from copy import deepcopy
 from datetime import datetime
 
-from itaqa.geography import Italy, converter
+from itaqa.geography import Italy
 from itaqa.visualization import plotting
 
 
