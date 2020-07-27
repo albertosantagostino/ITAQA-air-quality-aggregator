@@ -80,8 +80,9 @@ python3 itaqa.py sandbox
 
 ## Architecture
 <p align="center">
-  <img src="docs/architecture/architecture.png" title="ITAQA Architecture" width="500" />
+  <img src="docs/architecture/architecture.png" title="ITAQA Architecture" width="700" />
 </p>
+
 
 ## FAQ
 

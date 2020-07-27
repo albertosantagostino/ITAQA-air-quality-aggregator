@@ -6,8 +6,9 @@ Banner mountain icon derived, original by **[Freepik](https://www.flaticon.com/a
 
 **Schemes**
 
-Architecture schemes made with **[Excalidraw](https://excalidraw.com/)**
+Architecture schemes made with **[diagrams.net](https://www.diagrams.net/)** (formerly draw.io)
 
 **Libraries/packages**
 
-All libraries listed in [requirements.txt](requirements.txt)
+All used libraries listed in `pyproject.toml`
+
