@@ -116,7 +116,7 @@ def get_AQS_list(dt_range, redownload):
             if (row[2] != '-9999'):
                 sensor_id = row[0]
                 if sensor_id in stations_dict:
-                    dt = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
+                    dt = datetime_object.isoformat()
                     data_dict[sensor_id][dt] = row[2]
                 else:
                     missing_sensors.add(sensor_id)

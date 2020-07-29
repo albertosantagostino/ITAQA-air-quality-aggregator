@@ -52,7 +52,7 @@ class AirQualityStation():
         print_str += f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
         print_str += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
         print_str += f"Geolocation:\t{self.geolocation}\n"
-        print_str += f"Data stored:\t{data_info['shape']} (Total: {data_info['total']})\n"
+        print_str += f"Data stored:\t{data_info['shape']}\n"
         print_str += f"Pollutants:\t{', '.join(map(str, data_info['pollutants']))}\n"
         print_str += f"{90*'-'}"
         return print_str
@@ -70,7 +70,7 @@ class AirQualityStation():
         """Data setter"""
         # TODO: Check if provided data is a valid pandas df with a Timestamp column
         self._data = value
-        self.metadata['last_edit'] = datetime.now().strftime('%Y%m%dT%H%M%S')
+        self.metadata['last_edit'] = datetime.now().replace(microsecond=0).isoformat()
         # TODO: Check metadata performances
         self.update_metadata_datainfo()
 
@@ -97,7 +97,6 @@ class AirQualityStation():
         """Update the information in metadata['datainfo']"""
         # TODO: Evaluate if it make sense to serialize all these additional info
         data_info = {}
-        data_info['total'] = int(self.data.size)
         data_info['shape'] = self.data.shape
         cols = self.data.columns.to_list()
         cols.remove('Timestamp')

@@ -103,10 +103,11 @@ if __name__ == "__main__":
 
     # Create arguments parser
     desc = f"+{30*'-'}+\n|{12*' '}ITAQA{13*' '}|\n|{30*' '}|\n| ITaly Air Quality Aggregator |\n+{30*'-'}+\n\n"
-    desc += "This script is the entrypoint of the project. From here you can download data, run\n"
-    desc += "unit tests or play around adding code in the sandbox section\n\n"
-    epilog = "For help on a specific command, run: 'python3 itaqa.py {command} -h'\n\n"
-    epilog += "Example usage:\n'python3 itaqa.py download --region lombardia --min_date 20200101 --filename test'"
+    desc += "This script is the entrypoint of ITAQA.\n"
+    desc += "From here you can perform data download, update, visualization, you can\n"
+    desc += "run unit tests or play around in the sandbox section\n\n"
+    epilog = "For help on a specific command, run: 'python3 itaqa.py <COMMAND> -h'\n\n"
+    epilog += "Sample usage:\n'python3 itaqa.py download --region lombardia --min_date 20200101 --filename test'"
     parser = ArgumentParser(description=desc, usage=SUPPRESS, formatter_class=RawTextHelpFormatter, epilog=epilog)
     parser._action_groups.pop()
     parser._action_groups[0].title = "Available modes"
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     dt_now = datetime.now()
     if parameters.mode == 'download':
         if parameters.region not in REGION_CRAWLERS:
-            print(f"Invalid region ({parameters.region})")
+            raise ValueError(f"Invalid region or not implemented yet ({parameters.region})")
             sys.exit(1)
         try:
             min_date = datetime.strptime(parameters.min_date, '%Y%m%d')
