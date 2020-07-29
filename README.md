@@ -1,37 +1,41 @@
 # Italy Air Quality Aggregator (ITAQA)
 
-
 <a href="https://github.com/albertosantagostino/ITAQA-air-quality-aggregator/commits/master" target="\_parent"><img alt="GitHub - License" src="https://img.shields.io/github/last-commit/albertosantagostino/ITAQA-air-quality-aggregator?label=latest%20commit"></a> <a href="https://github.com/albertosantagostino/ITAQA-air-quality-aggregator/issues" target="\_parent"><img alt="ITAQA open issues" src="https://img.shields.io/github/issues-raw/albertosantagostino/ITAQA-air-quality-aggregator"></a>
 
 ![ITAQA](docs/img/banner.png)
 
-**ITAQA** is a framework built to **aggregate** Italy air quality data, collecting automatically measurements from different sources. It provides scripts and utilities to query data, analyze it and create visualizations
+**ITAQA** is a framework that **aggregates** Italy air quality data, collecting automatically measurements from different sources. It provides scripts and utilities to query data, analyze it and create interactive graphs
 
 ### The question that sparked this project
 
-The idea of collecting and measuring air pollution in this period of time originated from this thought:
+ITAQA was created in the beginning of 2020 to answer this question:
 
-> As a consequence of the SARS-CoV-2 outbreak in Italy ([Wikipedia link](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy)), will there be a measurable **effect on the air pollution** in the affected region(s) due to the "more people working from home therefore **less traffic**" effect? If yes, is this reduction strongly correlated with the level of lockdown enforced by the Italian government in these weeks/months?
+> As a consequence of the [COVID-19 pandemic in Italy](https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy), will there be a measurable **effect on the air pollution** due to the abrupt lifestyle change (more people working from home, less traffic) after the [enforcement of lockdowns](https://en.wikipedia.org/wiki/COVID-19_pandemic_lockdown_in_Italy)? If yes, can this reduction be correlated with precision to these measures?
 
-More in general, the purpose of the framework is to provide national air pollution data in an **uniform and accessible way**
+To verify this conjecture it would be preferable to have a single uniform data set to use as input
 
-(If you are interested in learning more on ITAQA's origin, you should read [this post on my blog](https://albertosantagostino.github.io/blog/2020/05/29/ITAQA_introduction_en))
+The main providers of pollution data in Italy are **ARPA** agencies, (*Agenzie Regionali per la Protezione Ambientale*). Unfortunately, they are **regional** agency, providing data only for their region of competence (meaning 21 different agencies, providing data in different formats)
+
+The main purpose of ITAQA is to automatically download and aggregate national air pollution data in an **uniform and accessible way**, providing data analysis tools
+
+(You can read more on ITAQA's origin in [this post](https://albertosantagostino.github.io/blog/2020/05/29/ITAQA_introduction_en))
 
 ## Objectives
 
-* Create a single place to orchestrate the download of pollution data from different Italy regions (through **ARPA** websites)
-  * Unfortunately, ARPA websites are very diverse among Italian regions (as an example, see the websites of [ARPA Piemonte](http://www.arpa.piemonte.it/) vs [ARPA Lombardia](https://www.arpalombardia.it/Pages/ARPA_Home_Page.aspx) vs [ARPA Emilia-Romagna](https://www.arpae.it/))
-    As far as I know a single way to collect pollution data from all the stations distributed on the whole country with a "single national API call" doesn't exist
-* Build a tool to graphically visualize data and history of pollutants in different areas of the country
+* Create a single place to orchestrate the download of pollution data for all Italy regions (from ARPA websites) and to aggregate the collected data in an uniform data structure (the same for every region) that can be saved/loaded quickly
+* Create a tool to plot pollution data, able also to create intuitive visualizations/comparison between regions
 * Search correlation between big "behavior-changing" events and air pollution
+* Make the entire framework usable also by non-technical users (GUI creation)
 
 ## Usage
 
-#### Overview
+#### Technical overview
 
-The core concept of ITAQA are **AirQualityStation** (or **AQS**) objects. They represent sensors holding time indexed pollution data for a specific location
+The core concepts of ITAQA are:
 
-Data aggregation and download is performed by **crawlers**, scripts that obtain pollution records for a specific region and time, parse and store them in **AirQualityStationCollection** (or **AQSC**) objects
+* **AirQualityStation** (or **AQS**) objects: single sensors holding time indexed pollution data for specific locations
+* **AirQualityStationCollection** (or **AQSC**) objects: collections of **AQS** easy to update, save, query
+* **Crawlers**: scripts that obtain pollution data for a specific region and time, downloading and aggregating it from ARPA websites directly into **AQSC**
 
 #### Installation
 
@@ -48,10 +52,11 @@ itaqa.py [MODE] [parameters] [-h]
 **Available modes**  
 
 ```
-download      Download data, serialize and save it in a AQSC object
-update        Given an existing AQSC collection, update it with the most recent data
-test          Run all the unit tests
-sandbox       Run a special section for debugging/testing purposes
+download            Download new data, save the AQSC in dump/REGION/
+update              Update existing AQS collection with new data
+view                Enter interactive GUI mode to view and plot AQS data
+test                Run unit tests (pytest)
+sandbox             Run sandbox
 ```
 #### Example
 
@@ -59,6 +64,7 @@ If you want to perform a data download to check if everything is working, you ca
 
 **Data download**  
 Download data from Lombardia for the first month of 2020:  
+
 ```
 python3 itaqa.py download --region lombardia --min_date 20200101 --max_date 20200201  
 ```
@@ -66,11 +72,12 @@ python3 itaqa.py download --region lombardia --min_date 20200101 --max_date 2020
 The message _"Download completed!"_ indicates the successful download and serialization of all the requested data. Air quality information for the specified period has been stored in a AQSC object (a special collection that encapsulates multiple AQS, saved as a `.msgpack` file)
 
 **Data analysis and visualization**  
-While ITAQA is currently meant for developers, a basic GUI to explore and view data is ready to be used. Start the GUI with the command:  
+While ITAQA is currently meant for developers, a basic GUI to explore and view data is ready to be used. Start the GUI with the command:
+
 ```
 python3 itaqa.py view
 ```
-A graphical application will start. Select the folder where the data is stored to see the AQS objects and to visualize the contained data directly in a browser using the correspondent button.
+Select the folder where the data is stored to see the AQS objects contained. Select and plot the desired ones using the correspondent button.
 
 As an alternative, data can be loaded and explored directly editing the sandbox section of `itaqa.py`, and invoking the main script in this way:
 
@@ -83,30 +90,28 @@ python3 itaqa.py sandbox
   <img src="docs/architecture/architecture.png" title="ITAQA Architecture" width="700" />
 </p>
 
-
 ## FAQ
 
-**Why make this project? Why not reuse one of the already existing air quality plots and websites?**
+**Why make this? There are already air quality websites that collect this kind of data**
 
-> The first use case is to investigate the thesis above ("*Has lockdown a measurable effect on air quality? In what measure?"*)  
-> Nevertheless, the aim of this project is broader: create a set of reusable air quality analysis tools that unify all different sources from the regions of Italy
+> First of all: there is no public place (as far as I know) where air pollution data is collected in an uniform way for the entire country  
+> The main use case is to investigate the thesis above ("*Did the lockdown have a measurable effect on air quality? In what measure?"*), meaning that I want to produce plots where this correlation is clearly visible  
+> Nevertheless, the aim of this project is broader: create a set of reusable air quality analysis tools that unify all sources from the regions of Italy
 
-**There is already an air quality/pollution aggregator, you can find it and use it at this link...**
+**You said ARPAs provide data in different formats. Why?**
 
-> Nice! I didn't check if this thing was already existing, because if I do this all the time, I wouldn't get any projects done :)  
-> (I'm mainly developing this as a personal project, to learn stuff in the process)
+> I assume that each ARPA can decide how to handle and distribute data to the public and unfortunately it seems they never talked to each other  
+> Even the websites are all completely different ([ARPA Piemonte](http://www.arpa.piemonte.it/) vs [ARPA Lombardia](https://www.arpalombardia.it/Pages/ARPA_Home_Page.aspx) vs [ARPA Emilia-Romagna](https://www.arpae.it/) vs [ARPA Toscana](www.arpat.toscana.it))  
+> _Maybe_ there is some "internal uniform data format" they use to exchange data, but if it exists, is not available to the public
 
-**What are these regional "ARPA"?**
+**Do you plan to publish visualizations/plots produced? Where?**
 
-> These are *"Agenzie Regionali per la Protezione Ambientale"* (*Regional Environmental Protection Agency*), Italian governmental agencies that collect and analyze air, water, acoustic and soil pollution data on all the territory
+> Yes! As soon as I have something worth showing, I will write an article in [my blog](https://albertosantagostino.github.io/)
 
-**Do you plan to publish some visualizations/plots produced?**
+**Can I contribute? What could I do?**
 
-> Yes! As soon as I have something worth showing that I consider interesting, I will publish it in [my blog](https://albertosantagostino.github.io/)
-
-**Can I contribute?**
-
-> Yes, of course, refer to [CONTRIBUTING](CONTRIBUTING.md) to find all the needed information (setup, developer environment, workflow)
+> Yes! Refer to [CONTRIBUTING](CONTRIBUTING.md) to find all the needed information (setup, developer environment, workflow)  
+> The main thing that needs heavy work right now is the creation of region-specific crawlers. Right now only a couple of them are fully implemented. Refer to the table below to see the status
 
 ## ARPA Websites
 
