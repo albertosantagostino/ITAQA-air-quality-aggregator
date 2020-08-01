@@ -21,12 +21,11 @@ from itaqa.utils import AQSC_utils, csv_utils, pandas_utils
 logger = logging.getLogger(__name__)
 
 
-def get_AQS_list(dt_range, redownload):
+def get_AQSC(dt_range, redownload):
     """
-    Return the list of the air quality stations from Lombardia
+    Return the AQSC for Lombardia for the specified dt_range
 
-    Data origin: ARPA Lombardia
-    Website: https://www.dati.lombardia.it
+    Data origin: https://www.dati.lombardia.it
     """
     min_dt, max_dt = dt_range
 
@@ -158,9 +157,7 @@ def get_AQS_list(dt_range, redownload):
 
 
 def get_pollutant_enum(pollutant_name):
-    """
-    Return the enum representing the pollutant
-    """
+    """Return Pollutant given the Lombardia-specific name"""
     if pollutant_name == 'Ossidi di Azoto':
         return Pollutant.NOX
     elif pollutant_name == 'Monossido di Azoto':

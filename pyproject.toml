@@ -15,7 +15,6 @@ plotly = "4.9.0"
 psutil = "5.7.2"
 pytest = "6.0.0"
 requests = "2.24.0"
-yapf = "0.30.0"
 PyQt5 = "5.15.0"
 progressbar = "2.5"
 rich = "4.2.0"
@@ -23,6 +22,7 @@ rich = "4.2.0"
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.3"
 pylint = "^2.5.3"
+yapf = "^0.30.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

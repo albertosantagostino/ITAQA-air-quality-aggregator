@@ -8,7 +8,7 @@ from enum import Enum, auto
 
 
 class Region(Enum):
-    """Enum holding Italy's regions"""
+    """Enum holding Italy regions"""
     # yapf: disable
     ABRUZZO             = auto()
     BASILICATA          = auto()
@@ -35,7 +35,7 @@ class Region(Enum):
 
 
 class Province(Enum):
-    """Enum holding Italy's provinces"""
+    """Enum holding Italy provinces"""
     # yapf: disable
     AL = auto()
     AN = auto()

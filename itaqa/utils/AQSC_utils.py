@@ -63,23 +63,3 @@ def remove_empty_stations(AQSC):
     empty_stations = [AQS.uuid for AQS in AQSC.AQS_list if AQS.data.size < 1]
     if empty_stations:
         AQSC.remove(empty_stations)
-
-
-def prepare_aqscinfo(AQSC):
-    info = {'AQSC': AQSC.name, 'AQS': []}
-
-    for AQS in AQSC.AQS_dict.values():
-        ts = AQS.data['Timestamp']
-        AQS_info = {
-            AQS.name: {
-                'uuid': AQS.uuid,
-                'comune': AQS.comune,
-                'shape': AQS.metadata['data_info']['shape'],
-                'pollutants': AQS.metadata['data_info']['pollutants'],
-                'min_dt': str(ts.min())[0:10],
-                'max_dt': str(ts.max())[0:10]
-            }
-        }
-        info['AQS'].append(AQS_info)
-
-    return info

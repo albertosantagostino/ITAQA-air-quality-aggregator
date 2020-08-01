@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.table import Table
 
 from itaqa.core.AirQualityStation import AirQualityStation
-from itaqa.utils.AQSC_utils import prepare_aqscinfo
 
 
 class AirQualityStationCollection():
@@ -104,15 +103,11 @@ class AirQualityStationCollection():
                 return res[0]
             return res
 
-    def save(self, file_path, generate_aqscinfo=False):
-        """Serialize and save the AQS collection to a file, together with the info json"""
+    def save(self, file_path):
+        """Serialize and save the AQS collection"""
         with open(file_path, 'wb') as fp:
             packed = msgpack.packb(self.AQS_list, default=AirQualityStation.encode_AQS_msgpack)
             fp.write(packed)
-        if generate_aqscinfo:
-            aqscinfo = prepare_aqscinfo(self)
-            with open(file_path.replace('.msgpack', '.json'), 'w') as fp:
-                json.dump(aqscinfo, fp)
 
     def load(self, file_path):
         """Load a serialized AQS collection"""

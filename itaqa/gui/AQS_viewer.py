@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AQS collection viewer
+AQSC viewer and AQS explorer GUI
 """
 
-import json
 import logging
 import sys
 
@@ -105,10 +104,10 @@ class Dialog(QDialog):
         self.move((geometry.width() - self.width()) / 2, (geometry.height() - self.height()) / 2)
 
         ## Signals and events
-        self.files_list.itemClicked.connect(self.browse_msgpack_list)
+        self.files_list.itemClicked.connect(self.refresh_msgpack_list)
         # TODO: Multiselection support and use itemSelectionChanged always (to support keyboard scroll)
         # self.files_list.itemSelectionChanged.connect(...)
-        self.AQS_stored.itemClicked.connect(self.AQS_show_info)
+        self.AQS_stored.itemClicked.connect(self.refresh_selected_AQS_info)
         button_browse_folder.clicked.connect(self.browse_folder)
         self.button_AQS_plot.clicked.connect(self.AQS_plot)
         shortcut_AQS_plot.activated.connect(self.AQS_plot)
@@ -119,6 +118,7 @@ class Dialog(QDialog):
         self.AQS_selected = None
 
     def browse_folder(self):
+        """Open 'browse folder' dialog"""
         root_path = Path.cwd()
         if root_path.joinpath('dump').exists():
             root_path = root_path.joinpath('dump')
@@ -130,7 +130,8 @@ class Dialog(QDialog):
             if ff.suffix == '.msgpack':
                 self.files_list.addItem(ff.name)
 
-    def browse_msgpack_list(self, item):
+    def refresh_msgpack_list(self, item):
+        """List all .msgpack files in the selected folder"""
         file_selected = Path(self.dir_path + '/' + item.text())
         self.AQSC_loaded = AirQualityStationCollection(name='Loaded_AQSC', file_path=file_selected)
         filename_info = parse_filename(item.text())
@@ -142,21 +143,21 @@ class Dialog(QDialog):
         for AQS in self.AQSC_loaded.AQS_list:
             self.AQS_stored.addItem(AQS.name)
 
-    def AQS_show_info(self, item):
+    def refresh_selected_AQS_info(self, item):
+        """Update the shown information on the selected AQS"""
         self.AQS_selected = self.AQSC_loaded.search(item.text())
         if isinstance(self.AQS_selected, list):
             raise ValueError("More than one station with the same name")
         tot_data = self.AQS_selected.metadata['data_info']['shape'][0]
         pollutants = '\n- '.join(map(str, self.AQS_selected.metadata['data_info']['pollutants']))
         self.AQS_info.setMarkdown(f"**{self.AQS_selected.name}**\n\nEntries: **{tot_data}**")
-
         self.table_pl.clearContents()
 
-        red_cell, green_cell = get_table_cells()
-
+        # Get the pollutant table cells styles
+        red_cell, green_cell = prepare_table_cells()
         fnt = QFont()
         fnt.setBold(True)
-
+        # For each known pollutant, fill the pollutant table based on the ones stored in the AQS
         pl_list = [pl.name for pl in Pollutant if pl.name != 'UNSET']
         for i, pl in enumerate(pl_list):
             header_pl = self.table_pl.model().headerData(i, Qt.Vertical)
@@ -171,15 +172,18 @@ class Dialog(QDialog):
         self.button_AQS_plot.setEnabled(True)
 
     def AQS_plot(self):
+        """Call AQS.plot()"""
         self.AQS_selected.plot()
 
     def clear_selection(self):
+        """Clear all widgets"""
         self.AQSC_info.clear()
         self.AQS_stored.clear()
         self.AQS_info.clear()
 
 
-def get_table_cells():
+def prepare_table_cells():
+    """Prepare pollutant table cells"""
     red_cell = QTableWidgetItem()
     red_cell_brush = QBrush()
     red_cell_brush.setStyle(Qt.BrushStyle(Qt.DiagCrossPattern))
@@ -194,6 +198,7 @@ def get_table_cells():
 
 
 def parse_filename(filename):
+    """Given a filename returns information on the creation, dt_range and region"""
     tok = filename.split('_')
     filename_info = {}
     filename_info['creation'] = datetime.strptime(tok[0], '%Y%m%d%H%M%S')
@@ -204,6 +209,7 @@ def parse_filename(filename):
 
 
 def start_GUI():
+    """Entrypoint: start viewer"""
     # Create the Qt Application
     app = QApplication(sys.argv)
 

@@ -6,4 +6,4 @@ Definition of region-specific functions
 
 from itaqa.crawler import piemonte, lombardia
 
-REGION_CRAWLERS = {'lombardia': lombardia.get_AQS_list}
+REGION_CRAWLERS = {'lombardia': lombardia.get_AQSC}

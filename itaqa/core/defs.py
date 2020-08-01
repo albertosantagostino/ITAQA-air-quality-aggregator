@@ -8,7 +8,7 @@ from enum import Enum, auto
 
 
 class Pollutant(Enum):
-    """Enum holding pollutant types"""
+    """Handled pollutants"""
     # yapf: disable
     PM10    = auto()
     PM2_5   = auto()
