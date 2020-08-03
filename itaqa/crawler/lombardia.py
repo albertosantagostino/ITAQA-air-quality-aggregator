@@ -140,7 +140,7 @@ def get_AQSC(dt_range, redownload):
         print([pt for pt in ignored_pollutants_list])
 
     # Create AQSC from stations_dict
-    AQSC = AirQualityStationCollection(name='Lombardia', AQS=[v for v in stations_dict.values()])
+    AQSC = AirQualityStationCollection(AQS=[v for v in stations_dict.values()])
     # Remove stations without data
     AQSC_utils.remove_empty_stations(AQSC)
     # Merge stations with the same name (indicating the same place)

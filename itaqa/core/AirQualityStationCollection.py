@@ -19,8 +19,9 @@ class AirQualityStationCollection():
     """
     Represent a collection of AirQualityStation objects, encapsulating it as a dictonary
 
-    Args:
-        name (str): Name of the collection
+        Args:
+        AQS (str): Existing AQS object/list/dict to add to the collection
+        file_path: Path of a serialized existing AQSC to load
 
     Attributes:
         AQS_dict(dict): Dict of AirQualityStation objects
@@ -28,8 +29,7 @@ class AirQualityStationCollection():
     Examples:
         AirQualityStationCollection('Mordor')
     """
-    def __init__(self, name, AQS=None, file_path=None):
-        self.name = name
+    def __init__(self, AQS=None, file_path=None):
         self._AQS_dict = dict()
         if AQS:
             self.add(AQS)
@@ -41,7 +41,7 @@ class AirQualityStationCollection():
         return f"(You may use directly the info() method to obtain this info table"
 
     def __repr__(self):
-        return f"AirQualityStationCollection('{self.name}')"
+        return f"AirQualityStationCollection()"
 
     def __iter__(self):
         yield from self.AQS_dict.values()

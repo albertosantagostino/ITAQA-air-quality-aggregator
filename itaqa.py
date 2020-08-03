@@ -61,16 +61,6 @@ def update_AQS(file_path, overwrite=False):
     # Save the new list (if specified, overwrite the old file)
 
 
-def plot_AQS(file_path):
-    """
-    Plot mode
-
-    Start interactive visualization mode: select and plot data using plotly
-    """
-    import ipdb
-    ipdb.set_trace()
-
-
 def run_tests():
     """
     Run tests
@@ -87,7 +77,7 @@ def sandbox(file_path=None):
     If a file is passed, it's loaded in "AQSC" for interactive debugging
     """
     if file_path:
-        AQSC = AirQualityStationCollection(name='Sandbox', file_path=file_path)
+        AQSC = AirQualityStationCollection(file_path=file_path)
     else:
         print("To use the sandbox, simply edit/add your code in the sandbox() section of itaqa.py")
         # << Add here code for testing >>

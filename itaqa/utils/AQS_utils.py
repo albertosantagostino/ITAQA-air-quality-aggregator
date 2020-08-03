@@ -70,7 +70,7 @@ def merge_AQS_data(AQS_list):
     new_AQS = AirQualityStation.AirQualityStation(AQS_list[0].name)
     new_AQS.set_address(region=AQS_list[0].region, province=AQS_list[0].province, comune=AQS_list[0].comune)
     # TODO: Check if metadata is coherent among all the AQS
-    new_AQS.metadata = AQS_list[0].metadata
+    new_AQS.metadata['premerge_history'] = AQS_list[0].metadata['premerge_history']
     new_AQS.geolocation = AQS_list[0].geolocation
     # TODO: Support for more than 2 AQS
     new_AQS.data = merge_dfs([AQS_list[0].data, AQS_list[1].data])
