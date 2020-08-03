@@ -47,15 +47,14 @@ class AirQualityStation():
         return f"AirQualityStation('{self.name}')"
 
     def __str__(self):
-        data_info = self.metadata['data_info']
-        print_str = f"{90*'-'}\n"
-        print_str += f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
-        print_str += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
-        print_str += f"Geolocation:\t{self.geolocation}\n"
-        print_str += f"Data stored:\t{data_info['shape']}\n"
-        print_str += f"Pollutants:\t{', '.join(map(str, data_info['pollutants']))}\n"
-        print_str += f"{90*'-'}"
-        return print_str
+        ret = f"{90*'-'}\n"
+        ret += f"AirQualityStation\n\nName:\t\t{self.name:20}\n"
+        ret += f"Location:\t{self.comune}, {self.province}, {self.region}\n"
+        ret += f"Geolocation:\t{self.geolocation}\n"
+        ret += f"Data shape:\t{self.data.shape}\n"
+        ret += f"Pollutants:\t{', '.join(map(str, [pl for pl in self.data.columns.to_list() if pl != 'Timestamp']))}\n"
+        ret += f"{90*'-'}"
+        return ret
 
     def __lt__(self, other):
         return self.name < other.name
@@ -70,9 +69,6 @@ class AirQualityStation():
         """Data setter"""
         # TODO: Check if provided data is a valid pandas df with a Timestamp column
         self._data = value
-        self.metadata['last_edit'] = datetime.now().replace(microsecond=0).isoformat()
-        # TODO: Check metadata performances
-        self.update_metadata_datainfo()
 
     @property
     def uuid(self):
@@ -92,16 +88,6 @@ class AirQualityStation():
         # TODO: Validate coordinates, catch invalid values
         # TODO: Make this a named tuple
         self.geolocation = [lat, lng, alt]
-
-    def update_metadata_datainfo(self):
-        """Update the information in metadata['datainfo']"""
-        # TODO: Evaluate if it make sense to serialize all these additional info
-        data_info = {}
-        data_info['shape'] = self.data.shape
-        cols = self.data.columns.to_list()
-        cols.remove('Timestamp')
-        data_info['pollutants'] = cols
-        self.metadata['data_info'] = data_info
 
     def plot(self, mode='multiple', pollutant=None):
         """Call visualization functions and create plotly graphs"""

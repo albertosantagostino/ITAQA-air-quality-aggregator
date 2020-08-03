@@ -23,7 +23,6 @@ class AirQualityStationCollection():
         name (str): Name of the collection
 
     Attributes:
-        name (str): Name of the collection
         AQS_dict(dict): Dict of AirQualityStation objects
 
     Examples:
@@ -32,7 +31,6 @@ class AirQualityStationCollection():
     def __init__(self, name, AQS=None, file_path=None):
         self.name = name
         self._AQS_dict = dict()
-
         if AQS:
             self.add(AQS)
         if file_path:
@@ -135,8 +133,8 @@ class AirQualityStationCollection():
                 f"[bold]{vv.name}[/bold]",
                 f"{vv.uuid}",
                 f"{vv.comune}",
-                ", ".join(map(str,vv.metadata['data_info']['pollutants'])),
-                str(vv.metadata['data_info']['shape'][0]),
+                ", ".join(map(str,[pl for pl in vv.data.columns.to_list() if pl != 'Timestamp'])),
+                str(vv.data.shape[0]),
                 str(ts.min())[0:10] + " - " + str(ts.max())[0:10])
             # yapf: enable
         console.print(table)

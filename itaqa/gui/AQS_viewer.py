@@ -148,9 +148,9 @@ class Dialog(QDialog):
         self.AQS_selected = self.AQSC_loaded.search(item.text())
         if isinstance(self.AQS_selected, list):
             raise ValueError("More than one station with the same name")
-        tot_data = self.AQS_selected.metadata['data_info']['shape'][0]
-        pollutants = '\n- '.join(map(str, self.AQS_selected.metadata['data_info']['pollutants']))
-        self.AQS_info.setMarkdown(f"**{self.AQS_selected.name}**\n\nEntries: **{tot_data}**")
+        tot_data = self.AQS_selected.data.shape[0]
+        pls = ', '.join(map(str, [pl for pl in self.AQS_selected.data.columns.to_list() if pl != 'Timestamp']))
+        self.AQS_info.setMarkdown(f"**{self.AQS_selected.name}**\n\nEntries: **{tot_data}**\n\nPollutants:\n\n{pls}")
         self.table_pl.clearContents()
 
         # Get the pollutant table cells styles
@@ -161,7 +161,7 @@ class Dialog(QDialog):
         pl_list = [pl.name for pl in Pollutant if pl.name != 'UNSET']
         for i, pl in enumerate(pl_list):
             header_pl = self.table_pl.model().headerData(i, Qt.Vertical)
-            if header_pl in self.AQS_selected.metadata['data_info']['pollutants']:
+            if header_pl in [pl for pl in self.AQS_selected.data.columns.to_list() if pl != 'Timestamp']:
                 self.table_pl.setItem(i, 0, QTableWidgetItem(green_cell))
                 count_cell = QTableWidgetItem(str(self.AQS_selected.data[pl].count()))
                 count_cell.setFont(fnt)
