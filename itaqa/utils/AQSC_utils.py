@@ -4,13 +4,16 @@
 Utilities to handle and manipulate AirQualityStationCollection objects
 """
 
-import logging
 import json
+import logging
+import warnings
 
-from itertools import groupby
 from collections import defaultdict
+from itertools import groupby
 
-from itaqa.core import AirQualityStation
+from itaqa.core.AirQualityStation import AirQualityStation
+from itaqa.core.AirQualityStationCollection import AirQualityStationCollection
+from itaqa.utils.AQS_utils import merge_AQS_data
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ def merge_by_group(AQSC, AQS_group):
     """Merge multiple groups of AQS and return a list of merged AQS objects"""
     for k in AQS_group:
         # Setup new resulting AQS
-        new_AQS = AirQualityStation.AirQualityStation(k)
+        new_AQS = AirQualityStation(k)
         new_AQS.set_address(region=AQS_group[k][0].region,
                             province=AQS_group[k][0].province,
                             comune=AQS_group[k][0].comune)
@@ -63,3 +66,59 @@ def remove_empty_stations(AQSC):
     empty_stations = [AQS.uuid for AQS in AQSC.AQS_list if AQS.data.size < 1]
     if empty_stations:
         AQSC.remove(empty_stations)
+
+
+def merge_AQSC(AQSC1, AQSC2):
+    """
+    Merge the data of two AQSCs and return a new AQSC
+
+    Given two AQSCs, check the amount of AQSs and merge them
+    This function is to be used to merge AQSs containing data relative to different timestamps
+    For example to merge two collections relative to different years
+    """
+    if len(AQSC1.AQS_list) != len(AQSC2.AQS_list):
+        warning.warn("The AQSCs contain a different number of AQSs")
+
+    new_AQSC = AirQualityStationCollection()
+
+    AQSC1_names = [AQS.name for AQS in AQSC1.AQS_list]
+    AQSC2_names = [AQS.name for AQS in AQSC2.AQS_list]
+
+    AQS_names = list(set(AQSC1_names) & set(AQSC2_names))
+    AQS_names.sort()
+
+    for AQS_name in AQS_names:
+        AQS1 = AQSC1.search(AQS_name)
+        AQS2 = AQSC2.search(AQS_name)
+        merged_AQS = merge_AQS_data([AQS1, AQS2])
+        new_AQSC.add(merged_AQS)
+
+    return new_AQSC
+
+
+def merge_AQSC_multiple(AQSC_list):
+    """
+    Merge the data of multiple AQSCs and return a new AQSC
+
+    Given a list of AQSC, check the amount of AQS contained in each and merge them
+    This function is to be used to merge AQSs containing data relative to different timestamps
+    For example to merge two collections relative to different years
+    """
+    new_AQSC = AirQualityStationCollection()
+
+    all_names = list()
+    for AQSC in AQSC_list:
+        all_names.append([AQS.name for AQS in AQSC.AQS_list])
+
+    AQS_names = list(set().union(*all_names))
+    AQS_names.sort()
+
+    for AQS_name in AQS_names:
+        AQSs_to_merge = list()
+        for AQSC in AQSC_list:
+            AQS = AQSC.search(AQS_name)
+            AQSs_to_merge.append(AQS)
+        merged_AQS = merge_AQS_data(AQSs_to_merge)
+        new_AQSC.add(merged_AQS)
+
+    return new_AQSC

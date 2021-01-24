@@ -5,6 +5,7 @@ Visualization functions
 """
 
 from itaqa.visualization.defs import get_geometry_from_subplots_amount, get_pollutant_color
+from pandas import Timestamp as pd_ts
 from plotly.subplots import make_subplots
 
 import plotly.graph_objects as go
@@ -43,6 +44,28 @@ def AQS_multiplot(AQS):
                       title_x=0.5,
                       plot_bgcolor='rgba(0,0,0,0.04)',
                       showlegend=False)
+
+    lockdown_21_feb = pd_ts(year=2020, month=2, day=21)
+    lockdown_8_mar = pd_ts(year=2020, month=3, day=8)
+    lockdown_21_mar = pd_ts(year=2020, month=3, day=21)
+
+    #for i in range(1, len(data_lines):
+    #    import ipdb; ipdb.set_trace()
+
+    #fig.update_layout(shapes=[
+    #                            {
+    #                                'type': 'line',
+    #                                'x0': lockdown_21_feb,
+    #                                'y0': 0,
+    #                                'x1': lockdown_21_feb,
+    #                                'y1': 85,
+    #                                'line': {
+    #                                    'color': 'black',
+    #                                    'width': 2
+    #                                }
+    #                            }
+    #                        ])
+
     # Tweak: link all x-axes when multiple columns are visualized
     for i in range(1, len(data_lines) + 1):
         fig['layout'][f'xaxis{str(i)}']['matches'] = 'x'
@@ -58,7 +81,7 @@ def get_data_lines(AQS):
                                      y=AQS.data[f'{pollutant}'],
                                      name=f'{pollutant}',
                                      mode='lines+markers',
-                                     marker=dict(color='Black', size=3),
+                                     marker=dict(color='Black', size=2),
                                      line=dict(color=get_pollutant_color(pollutant), width=2))
             data_lines.append(data_line)
     return data_lines

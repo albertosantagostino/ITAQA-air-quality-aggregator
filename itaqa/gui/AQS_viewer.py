@@ -104,7 +104,7 @@ class Dialog(QDialog):
         self.move((geometry.width() - self.width()) / 2, (geometry.height() - self.height()) / 2)
 
         ## Signals and events
-        self.files_list.itemClicked.connect(self.refresh_msgpack_list)
+        self.files_list.itemClicked.connect(self.refresh_selected_AQSC_info)
         # TODO: Multiselection support and use itemSelectionChanged always (to support keyboard scroll)
         # self.files_list.itemSelectionChanged.connect(...)
         self.AQS_stored.itemClicked.connect(self.refresh_selected_AQS_info)
@@ -130,12 +130,11 @@ class Dialog(QDialog):
             if ff.suffix == '.msgpack':
                 self.files_list.addItem(ff.name)
 
-    def refresh_msgpack_list(self, item):
+    def refresh_selected_AQSC_info(self, item):
         """List all .msgpack files in the selected folder"""
-        file_selected = Path(self.dir_path + '/' + item.text())
-        self.AQSC_loaded = AirQualityStationCollection(name='Loaded_AQSC', file_path=file_selected)
+        AQSC_selected = Path(self.dir_path + '/' + item.text())
+        self.AQSC_loaded = AirQualityStationCollection(file_path=AQSC_selected)
         filename_info = parse_filename(item.text())
-
         self.AQSC_info.setMarkdown(f"Stored AQS: **{len(self.AQSC_loaded.AQS_list)}**\n\n" +
                                    f"Date range: from **{filename_info['min_dt']}** to "
                                    f"**{filename_info['max_dt']}**")
@@ -199,6 +198,7 @@ def prepare_table_cells():
 
 def parse_filename(filename):
     """Given a filename returns information on the creation, dt_range and region"""
+    # TODO: Implement here a fallback mode that manually gets the information if filename is invalid
     tok = filename.split('_')
     filename_info = {}
     filename_info['creation'] = datetime.strptime(tok[0], '%Y%m%d%H%M%S')

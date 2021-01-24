@@ -41,7 +41,7 @@ def get_AQSC(dt_range, redownload):
         else:
             raise ValueError("Data table unknown for the specified year")
     else:
-        raise ValueError("Cannot use different years as min and max date for now")
+        raise ValueError("Cannot use different years as min and max date (for now)")
 
     metadata_file = f'dump/data/lombardia_metadata_{ref_year}.out'
     data_file = f'dump/data/lombardia_data_{ref_year}.out'
